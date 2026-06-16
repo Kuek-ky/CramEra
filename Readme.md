@@ -1,4 +1,4 @@
-To run the backend, 
+To run the backend,  
 
 cd backend  
 ./mvnw spring-boot:run  
