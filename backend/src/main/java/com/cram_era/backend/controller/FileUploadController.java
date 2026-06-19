@@ -2,9 +2,11 @@ package com.cram_era.backend.controller;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cram_era.backend.dao.DocumentDAO;
 import com.cram_era.backend.service.S3Service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 @RestController
 @RequestMapping("file") 
 public class FileUploadController {
+	private final DocumentDAO documentDAO;
+	private final S3Service s3Service;
+
+	// Let Spring inject both the DAO and your S3Service via the constructor
 	@Autowired
-	private S3Service s3Service;
+	public FileUploadController(DocumentDAO documentDAO, S3Service s3Service) {
+		this.documentDAO = documentDAO;
+		this.s3Service = s3Service;
+	}
 
 	@Value("${aws.s3.bucketName}")
 	private String bucketName;
@@ -29,26 +38,38 @@ public class FileUploadController {
 	@PostMapping("/upload")
 	public String handleFileUpload(@RequestParam("file") MultipartFile file,
 	                               RedirectAttributes redirectAttributes) {
+		//TODO: REMOVE HARDCODING LATER
+		String fileUrl = "";
+		int ownerId = 1;
+		int moduleId = 1;
 
+		String documentTitle = "i like apples :D";
+		String originalFileName = file.getOriginalFilename();
+		String uniqueFileName = ownerId + "-" + moduleId + "-" + originalFileName;
+		String description = "asdf";
+		String fileType = file.getContentType();
+		String visibility = "public";
+		int success = 0;
 		if (file.isEmpty()) {
-			redirectAttributes.addFlashAttribute("message", "Please select a file to upload.");
-			return "redirect:/";
+			return "no file uploaded!";
 		}
-
 		try {
-
 			// Upload to S3
-			s3Service.uploadFile(bucketName, file.getOriginalFilename(), file.getInputStream());
+			fileUrl = s3Service.uploadFile(bucketName, uniqueFileName, file.getInputStream());
 
-			redirectAttributes.addFlashAttribute("message",
-					"You successfully uploaded '" + file.getOriginalFilename() + "' to S3!");
+			// Insert to database
+			success = documentDAO.insertDocument(ownerId, moduleId, documentTitle,
+					description, fileType, fileUrl, visibility);
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			redirectAttributes.addFlashAttribute("message", "Failed to upload file.");
+			return "Failed to upload to S3";
+		} catch (Exception e) {
+			// Catching database or other runtime exceptions
+			e.printStackTrace();
+			return "Database insert failed";
 		}
-
-		return "redirect:/";
+		return fileUrl;
 	}
 
 
