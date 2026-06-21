@@ -25,7 +25,7 @@ public class testcontroller {
 }
 */
 
-const API_BASE = "https://192.168.1.62:8080";
+const API_BASE = "http://172.18.110.10:8080"; //ip address to come from your wsl container, NOT YOUR LOCAL MACHINE
 
 /*
 * Am testing out some code by making a default landing page
@@ -36,7 +36,7 @@ export default function Landing() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch(`${API_BASE}/testing`)
+    fetch(`${API_BASE}/examplehere/testing`)
       .then((res) => res.text())
       .then((text) => { setMessage(text); setStatus("ok"); })
       .catch((err) => { setMessage(err.message); setStatus("error"); });

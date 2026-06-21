@@ -1,12 +1,14 @@
 package com.cram_era.backend.controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("examplehere") 
+@CrossOrigin(origins = "*")
+@RequestMapping("examplehere")
 public class testcontroller {
 
 	@GetMapping(path="/testing") //find this on localhost:8080/examplehere/testing, using postman
