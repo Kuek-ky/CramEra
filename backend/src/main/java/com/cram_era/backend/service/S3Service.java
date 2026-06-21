@@ -25,7 +25,11 @@ public class S3Service {
                             .build(),
 
                     RequestBody.fromInputStream(fileStream, fileStream.available()));
-            return "File uploaded successfully.";
+
+            String url = s3Client.utilities()
+                            .getUrl(builder -> builder.bucket(bucketName)
+                            .key(key)).toExternalForm();
+            return url;
         } catch (S3Exception e) {
             throw new RuntimeException("Failed to upload file: " + e.awsErrorDetails().errorMessage());
         } catch (IOException e) {
