@@ -1,10 +1,6 @@
 package com.cram_era.backend.controller;
 
 import java.io.IOException;
-import java.sql.Date;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.cram_era.backend.dao.DocumentDAO;
 import com.cram_era.backend.service.S3Service;
@@ -14,8 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@RestController
-@RequestMapping("file") 
+@RequestMapping("file")
 public class FileUploadController {
 	private final DocumentDAO documentDAO;
 	private final S3Service s3Service;
