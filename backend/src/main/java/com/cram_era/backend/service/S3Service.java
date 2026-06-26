@@ -1,5 +1,6 @@
 package com.cram_era.backend.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -17,6 +18,9 @@ public class S3Service {
         this.s3Client = s3Client;
     }
 
+    @Value("${aws.s3.base_url}")
+    private String base_url;
+
     public String uploadFile(String bucketName, String key, InputStream fileStream) {
         try {
             s3Client.putObject(PutObjectRequest.builder()
@@ -24,12 +28,8 @@ public class S3Service {
                             .key(key)
                             .build(),
 
-                    RequestBody.fromInputStream(fileStream, fileStream.available()));
-
-            String url = s3Client.utilities()
-                            .getUrl(builder -> builder.bucket(bucketName)
-                            .key(key)).toExternalForm();
-            return url;
+            RequestBody.fromInputStream(fileStream, fileStream.available()));
+            return base_url+key;
         } catch (S3Exception e) {
             throw new RuntimeException("Failed to upload file: " + e.awsErrorDetails().errorMessage());
         } catch (IOException e) {

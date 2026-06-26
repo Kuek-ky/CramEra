@@ -1,6 +1,6 @@
 package com.cram_era.backend.controller;
 
-import com.cram_era.backend.model.Document;
+import com.cram_era.backend.entities.Document;
 import com.cram_era.backend.service.SearchService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

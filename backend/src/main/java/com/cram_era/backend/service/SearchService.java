@@ -1,6 +1,6 @@
 package com.cram_era.backend.service;
 
-import com.cram_era.backend.model.Document;
+import com.cram_era.backend.entities.Document;
 import org.springframework.stereotype.Service;
 import com.cram_era.backend.repository.DocumentRepository;
 
