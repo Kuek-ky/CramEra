@@ -19,10 +19,10 @@ public class UserService {
         checkUserEmailValidity(userCreation);
         checkUserNameValidity(userCreation);
 
-        if (userDAO.doesUserNameAlrExist(userCreation.getUserName().trim())) {
+        if (userDAO.existsByUserName(userCreation.getUserName().trim())) {
             throw new IllegalArgumentException("Username already exists");
         }
-        if (userDAO.doesUserEmailAlrExist(userCreation.getUserEmail().trim())){
+        if (userDAO.existsByUserEmail(userCreation.getUserEmail().trim())){
             throw new IllegalArgumentException("Email already exists");
         }
 
@@ -32,7 +32,7 @@ public class UserService {
         user.setUserName(userCreation.getUserName().trim());
         user.setUserEmail(userCreation.getUserEmail().trim());
 
-        userDAO.createUser(user);
+        userDAO.save(user);
         return "User successfully created";
     }
 
