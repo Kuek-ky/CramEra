@@ -6,6 +6,9 @@ import com.cram_era.backend.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
+
 @RestController
 @RequestMapping("document")
 public class DocumentController {
@@ -18,11 +21,18 @@ public class DocumentController {
 
 	@GetMapping(path="getMetaData/{id}")
 	public Document getMetaDataById(@PathVariable("id") int id) {
+
 		return documentService.getDocumentById(id);
 	}
 
 	@GetMapping(path="getFileUrl/{id}")
 	public String getFileUrlById(@PathVariable("id") int id) {
+
 		return documentService.getFullDocumentUrlById(id);
+	}
+
+	@GetMapping("/file/{id}")
+	public ResponseEntity<Resource> getFile(@PathVariable int id) {
+		return documentService.downloadFile(id);
 	}
 }
