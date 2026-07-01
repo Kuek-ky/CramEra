@@ -20,9 +20,9 @@ public class SearchController {
     @GetMapping("/search")
     public ResponseEntity<List<Document>> search(
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String category
+            @RequestParam(required = false) String docType
     ) {
-        List<Document> results = searchService.search(name, category);
+        List<Document> results = searchService.search(name, docType);
         return ResponseEntity.ok(results);
     }
 }

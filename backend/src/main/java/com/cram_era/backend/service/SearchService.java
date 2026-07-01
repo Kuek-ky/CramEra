@@ -15,11 +15,11 @@ public class SearchService {
         this.documentRepository = documentRepository;
     }
 
-    public List<Document> search(String name, String category) {
+    public List<Document> search(String name, String docType) {
         String cleanedName = clean(name);
-        String cleanedCategory = clean(category);
+        String cleanedDocType = clean(docType);
 
-        return documentRepository.searchDocuments(cleanedName, cleanedCategory);
+        return documentRepository.searchDocuments(cleanedName, cleanedDocType);
     }
 
     private String clean(String value) {

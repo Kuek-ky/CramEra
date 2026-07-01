@@ -14,10 +14,10 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             SELECT d FROM Document d
             WHERE (:name IS NULL OR LOWER(d.title) LIKE LOWER(CONCAT('%', :name, '%')))
             AND (d.visibility = 'public')
-            AND (:category IS NULL OR LOWER(d.fileType) = LOWER(:category))
+            AND (:docType IS NULL OR LOWER(d.documentType) = LOWER(:docType))
             """)
     List<Document> searchDocuments(
             @Param("name") String name,
-            @Param("category") String category
+            @Param("docType") String docType
     );
 }
