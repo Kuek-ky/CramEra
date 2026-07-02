@@ -22,7 +22,7 @@ public class S3Service {
     @Value("${aws.s3.base_url}")
     private String base_url;
 
-    @Value("${aws.s3.bucket}")
+    @Value("${aws.s3.bucketName}")
     private String bucketName;
 
     // =========================
