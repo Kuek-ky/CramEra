@@ -1,7 +1,6 @@
 CREATE SCHEMA cramera;
 USE cramera; 
 
-
 CREATE TABLE users (
 	users_ID int AUTO_INCREMENT, 
     user_name varchar(20), 
@@ -162,5 +161,6 @@ INSERT INTO course_modules (course_modules_ID, module_ID, course_ID) VALUES
 (2, 2, 2),
 (3, 3, 3);
 
+SELECT USER();
 
 
