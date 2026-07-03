@@ -161,6 +161,12 @@ INSERT INTO course_modules (course_modules_ID, module_ID, course_ID) VALUES
 (2, 2, 2),
 (3, 3, 3);
 
+-- 8. Insert Saved Documents 
+INSERT INTO saved_documents (document_ID, user_ID,folder_ID) VALUES
+(1, 1, 1),
+(2, 1, 1); 
+
+
 SELECT USER();
 
 
