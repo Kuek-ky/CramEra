@@ -7,6 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "documents")
@@ -23,8 +25,9 @@ public class Document {
     @Column(name = "original_uploader_ID")
     private Integer originalUploaderID;
 
-    @Column(name = "module_ID")
-    private Integer moduleID;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "module_ID")
+    private Module module;
 
     @Column(name = "title", nullable = false, length = 50)
     private String title;
@@ -32,7 +35,7 @@ public class Document {
     @Column(name = "description", length = 8000)
     private String description;
 
-    @Column(name = "file_URL", nullable = false, length = 100)
+    @Column(name = "file_URL", nullable =false, length = 255)
     private String fileURL;
 
     @Column(name = "file_type", nullable = false, length = 25)
@@ -51,6 +54,14 @@ public class Document {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @ManyToMany
+    @JoinTable(
+            name = "document_tags",
+            joinColumns = @JoinColumn(name = "document_ID"),
+            inverseJoinColumns = @JoinColumn(name = "tag_ID")
+    )
+    private Set<Tag> tags = new HashSet<>();
 
     // --- Getters and Setters ---
 
@@ -78,12 +89,20 @@ public class Document {
         this.originalUploaderID = originalUploaderID;
     }
 
-    public Integer getModuleID() {
-        return moduleID;
+    public Module getModule() {
+        return module;
     }
 
-    public void setModuleID(Integer moduleID) {
-        this.moduleID = moduleID;
+    public void setModule(Module module) {
+        this.module = module;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
     }
 
     public String getTitle() {
