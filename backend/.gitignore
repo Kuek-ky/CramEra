@@ -36,3 +36,5 @@ build/
 .Continue
 
 .env
+
+**/.DS_Store
