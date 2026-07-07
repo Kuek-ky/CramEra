@@ -4,20 +4,27 @@ import com.cram_era.backend.dao.UserDAO;
 import com.cram_era.backend.entities.User;
 import com.cram_era.backend.entities.UserCreation;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.cram_era.backend.entities.UserLogin;
+import com.cram_era.backend.entities.LoginResponse;
+import java.util.Optional;
 
 // in charge of business rules, make sure userName and userEmail are valid,
 // and also not already existing in the system (already existing account)
 @Service
 public class UserService {
     private final UserDAO userDAO;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserDAO userDAO) {
+    public UserService(UserDAO userDAO, BCryptPasswordEncoder passwordEncoder) {
         this.userDAO = userDAO;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public String createUser(UserCreation userCreation){
         checkUserEmailValidity(userCreation);
         checkUserNameValidity(userCreation);
+        checkPasswordValidity(userCreation);
 
         if (userDAO.existsByUserName(userCreation.getUserName().trim())) {
             throw new IllegalArgumentException("Username already exists");
@@ -26,14 +33,16 @@ public class UserService {
             throw new IllegalArgumentException("Email already exists");
         }
 
-
         User user = new User();
 
         user.setUserName(userCreation.getUserName().trim());
         user.setUserEmail(userCreation.getUserEmail().trim());
 
+        String hashedPassword = passwordEncoder.encode(userCreation.getUserPassword());
+        user.setPasswordHash(hashedPassword);
+
         userDAO.save(user);
-        return "User successfully created";
+        return "Account successfully created.";
     }
 
     public String checkUserNameValidity(UserCreation userCreation){
@@ -84,4 +93,59 @@ public class UserService {
             throw new IllegalArgumentException("Email contains invalid character " + c);
         }
     }
+
+    public String checkPasswordValidity(UserCreation userCreation){
+        String userPassword = userCreation.getUserPassword();
+        if (userPassword == null || userPassword.isBlank()) {
+            throw new IllegalArgumentException("Password cannot be blank");
+        }
+        userPassword = userPassword.trim();
+        if (userPassword.length() < 8){
+            throw new IllegalArgumentException("Password must be at least 8 characters");
+        }
+
+        boolean hasLetter = false;
+        boolean hasDigit = false;
+        for (int i = 0; i < userPassword.length(); i++){
+            char curr = userPassword.charAt(i);
+            if (Character.isLetter(curr)){
+                hasLetter = true;
+            }
+            if (Character.isDigit(curr)){
+                hasDigit = true;
+            }
+        }
+        if (!hasLetter) {
+            throw new IllegalArgumentException("Password must contain at least one letter");
+        } else if (!hasDigit){
+            throw new IllegalArgumentException("Password must contain at least one number");
+        }
+        return "Password is valid";
+    }
+
+    public LoginResponse loginUser(UserLogin userLogin) {
+        String userName = userLogin.getUserName();
+        String userPassword = userLogin.getUserPassword();
+
+        if (userName == null || userName.isBlank()) {
+            throw new IllegalArgumentException("Username cannot be blank");
+        }
+        if (userPassword == null || userPassword.isBlank()) {
+            throw new IllegalArgumentException("Password cannot be blank");
+        }
+        userName = userName.trim();
+
+        Optional<User> optionalUser = userDAO.findByUserName(userName);
+        if (optionalUser.isEmpty()) {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+        User user = optionalUser.get();
+
+        if (!passwordEncoder.matches(userPassword, user.getPasswordHash())) {
+            throw new IllegalArgumentException("Invalid username or password.");
+        }
+
+        return new LoginResponse(user.getUserName(), user.getUserEmail());
+    }
+
 }

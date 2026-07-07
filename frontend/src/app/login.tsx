@@ -10,9 +10,8 @@ function sleep(ms: number){
 }
 // Artificial delay for around 2 seconds to make it less clunky for the loading -> result process
 
-export default function SignUp(){
+export default function Login(){
     const [userName, setUserName] = useState("");
-    const [userEmail, setUserEmail] = useState("");
     const [userPassword, setUserPassword] = useState("");
     const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
     // ^^ in charge of what UI to show, status can only be one of these 4 string values
@@ -21,14 +20,9 @@ export default function SignUp(){
     // ^^ stores backend response/ error message
 
     async function submitButton(){
-        // === checks type and value
         if (userName.trim() === ""){
             setStatus("error");
             setMessage("Please enter a username.");
-            return;
-        } else if (userEmail.trim() === ""){
-            setStatus("error");
-            setMessage("Please enter an email.");
             return;
         } else if (userPassword.trim() === ""){
             setStatus("error");
@@ -41,39 +35,37 @@ export default function SignUp(){
             setMessage("");
             console.log("Sending user to backend");
 
-            const response = await fetch(`${API_BASE}/api/users`, {
+            const response = await fetch(`${API_BASE}/api/login`, {
                 method: "POST",
                 headers:{"Content-Type":"application/json",},
                 body: JSON.stringify({
                     userName: userName,
-                    userEmail: userEmail,
                     userPassword: userPassword
                 }),
             });
             // ^^ to get the whole HTTP response, status code, headers etc...
 
-            const result = await response.text();
-            // ^^ actual message, like "Email must contain at least one @" or smt
+            await sleep(1000);
 
             if (response.ok){
-                await sleep(1000);
+                const user = await response.json();
                 router.push({
                     pathname: "/profile",
                     params: {
-                        userName: userName,
-                        userEmail: userEmail,
+                        userName: user.userName,
+                        userEmail: user.userEmail,
                     },
                 });
             } else {
+                const result = await response.text();
+
                 setStatus("error");
                 setMessage(result);
             }
-
-            console.log("Backend response:", result);
         } catch (error){
             await sleep(1000);
             setStatus("error");
-            setMessage("cannot reach backend :(");
+            setMessage("Cannot reach backend :(");
         }
     }
 
@@ -93,23 +85,18 @@ export default function SignUp(){
             >
                 {/* ^^ for rectangular box */}
 
-            <Text style={{ fontSize: 28, fontWeight: "600", marginBottom: 32 }}>Create Account</Text>
-            <TextInput
-                placeholder="Username"
-                value = {userName}
-                onChangeText={setUserName}
-                style={{borderWidth: 1, marginTop:12, padding: 8, borderRadius: 12, width: "100%"}}/>
-            <TextInput
-                placeholder="Email"
-                value = {userEmail}
-                onChangeText={setUserEmail}
-                style={{borderWidth: 1, marginTop:12, padding: 8, borderRadius: 12, width: "100%"}}/>
-            <TextInput
-                placeholder="Password"
-                value = {userPassword}
-                onChangeText={setUserPassword}
-                secureTextEntry={true}
-                style={{borderWidth: 1, marginTop:12, padding: 8, borderRadius: 12, width: "100%"}}/>
+                <Text style={{ fontSize: 28, fontWeight: "600", marginBottom: 32 }}>Login</Text>
+                <TextInput
+                    placeholder="Username"
+                    value = {userName}
+                    onChangeText={setUserName}
+                    style={{borderWidth: 1, marginTop:12, padding: 8, borderRadius: 12, width: "100%"}}/>
+                <TextInput
+                    placeholder="Password"
+                    value = {userPassword}
+                    onChangeText={setUserPassword}
+                    secureTextEntry={true}
+                    style={{borderWidth: 1, marginTop:12, padding: 8, borderRadius: 12, width: "100%"}}/>
 
                 <Pressable
                     onPress={submitButton}
@@ -124,24 +111,24 @@ export default function SignUp(){
                         alignItems: "center",
                     }}
                 >
-                <Text style={{color: "white", fontWeight:"400"}}>
-                    {status === "loading"? "Signing up..." : "Sign up"}
-                </Text>
-            </Pressable>
-            {status === "loading" && <ActivityIndicator style={{ marginTop: 16 }} />}
-            {status === "ok" && <Text style={{ marginTop: 16 }}>{message}</Text>}
-            {status === "error" && <Text style={{ marginTop: 16, color: "red" }}>{message}</Text>}
-
-            <View style={{ flexDirection: "row", marginTop: 16 }}>
-                <Text>Have an account already? </Text>
-
-                <Link href="/login">
-                    <Text style={{ color: "#00AEEF", textDecorationLine: "underline" }}>
-                        Sign in
+                    <Text style={{color: "white", fontWeight:"400"}}>
+                        {status === "loading"? "Signing in..." : "Sign in"}
                     </Text>
-                </Link>
-            </View>
+                </Pressable>
+                {status === "loading" && <ActivityIndicator style={{ marginTop: 16 }} />}
+                {status === "error" && <Text style={{ marginTop: 16, color: "red" }}>{message}</Text>}
+
+                <View style={{ flexDirection: "row", marginTop: 16 }}>
+                    <Text>Don't have an account? </Text>
+
+                    <Link href="/signup">
+                        <Text style={{ color: "#00AEEF", textDecorationLine: "underline" }}>
+                            Create account
+                        </Text>
+                    </Link>
+                </View>
             </View>
         </View>
     );
 }
+
