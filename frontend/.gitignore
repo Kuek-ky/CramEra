@@ -2,6 +2,7 @@
 
 # dependencies
 node_modules/
+/frontend/node_modules
 
 # Expo
 .expo/
@@ -44,3 +45,4 @@ example
 
 **/.DS_Store
 .vscode
+
