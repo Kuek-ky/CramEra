@@ -9,30 +9,50 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("document")
 public class DocumentController {
-	private final DocumentService documentService;
 
-	@Autowired
-	public DocumentController(DocumentService documentService, S3Service s3Service) {
-		this.documentService = documentService;
-	}
+    private final DocumentService documentService;
 
-	@GetMapping(path="getMetaData/{id}")
-	public Document getMetaDataById(@PathVariable("id") int id) {
+    @Autowired
+    public DocumentController(DocumentService documentService, S3Service s3Service) {
+        this.documentService = documentService;
+    }
 
-		return documentService.getDocumentById(id);
-	}
+    @GetMapping(path = "getMetaData/{id}")
+    public Document getMetaDataById(@PathVariable("id") int id) {
 
-	@GetMapping(path="getFileUrl/{id}")
-	public String getFileUrlById(@PathVariable("id") int id) {
+        return documentService.getDocumentById(id);
+    }
 
-		return documentService.getFullDocumentUrlById(id);
-	}
+    @GetMapping(path = "getFileUrl/{id}")
+    public String getFileUrlById(@PathVariable("id") int id) {
 
-	@GetMapping("/file/{id}")
-	public ResponseEntity<Resource> getFile(@PathVariable int id) {
-		return documentService.downloadFile(id);
-	}
+        return documentService.getFullDocumentUrlById(id);
+    }
+
+    @GetMapping("/file/{id}")
+    public ResponseEntity<Resource> getFile(@PathVariable int id) {
+        return documentService.downloadFile(id);
+    }
+
+    @GetMapping("/search")
+    public List<Document> searchDocuments(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String docType,
+            @RequestParam(required = false) String docTag,
+            @RequestParam(required = false) String module
+    ) {
+
+        return documentService.searchDocuments(
+                name,
+                docType,
+                docTag,
+                module
+        );
+
+    }
 }
