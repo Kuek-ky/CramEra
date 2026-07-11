@@ -71,9 +71,7 @@ export default function Login(){
 
     return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 24 }}>
-
-            <View
-                style={{
+            <View style={{
                     width: 320,
                     padding: 28,
                     borderWidth: 1,
@@ -81,10 +79,7 @@ export default function Login(){
                     borderRadius: 12,
                     backgroundColor: "white",
                     alignItems: "center",
-                }}
-            >
-                {/* ^^ for rectangular box */}
-
+                }}>
                 <Text style={{ fontSize: 28, fontWeight: "600", marginBottom: 32 }}>Login</Text>
                 <TextInput
                     placeholder="Username"
