@@ -25,6 +25,12 @@ public class DocumentController {
 		return documentService.getDocumentById(id);
 	}
 
+	@GetMapping(path="getMetaData/module/{id}")
+	public Document getMetaDataWithModuleById(@PathVariable("id") int id) {
+		return documentService.getDocumentWithModuleById(id);
+	}
+
+
 	@GetMapping(path="getFileUrl/{id}")
 	public String getFileUrlById(@PathVariable("id") int id) {
 

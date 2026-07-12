@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Autowired;
+import tools.jackson.databind.ObjectMapper;
 
 //this file involves data manipulation with the S3 bucket
 @RestController
@@ -90,60 +91,73 @@ public class FileUploadController {
 
 	@PutMapping(path="/update/{id}")
 	public String updateFileUpload(@PathVariable("id") int id,
-	                               @RequestPart("file") MultipartFile file,
-	                               @RequestPart("document") Document updatedDoc) {
-		Document existingDoc = null;
-		String oldS3Key = null;
-		String newFileUrl = "";
+	                               @RequestPart(value = "file", required = false) MultipartFile file,
+	                               @RequestPart("document") String documentJson) {
 
-		if (!file.isEmpty()) {
-			try {
-				// Get original document to get old file key
-				existingDoc = documentService.getDocumentById(id);
-				oldS3Key = existingDoc.getFileURL();
-			} catch (NoSuchElementException e) {
-				e.printStackTrace();
-				return "Document not found in database";
-			}
+		ObjectMapper mapper = new ObjectMapper();
+		Document updatedDoc;
+		Document existingDoc;
+		try {
+			updatedDoc = mapper.readValue(documentJson, Document.class);
+			existingDoc = documentService.getDocumentById(id);
+		} catch (NoSuchElementException e) {
+			e.printStackTrace();
+			return "Document not found in database";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Invalid JSON payload";
 		}
 
-		int ownerId = updatedDoc.getOwnerUserID();
-		//add in original id to allow repository.save to update row
 		updatedDoc.setId(id);
+		int ownerId = updatedDoc.getOwnerUserID();
 
-		// Generate new S3 key
-		String newS3Key = updatedDoc.generateS3Key(ownerId, file);
-		updatedDoc.setFileURL(newS3Key);
+		String oldS3Key = existingDoc.getFileURL();
+		String newS3Key = null;
+		String newFileUrl = "";
 
-		String fileType = file.getContentType();
-		updatedDoc.setFileType(fileType);
-		Document success = null;
+		boolean hasNewFile = (file != null && !file.isEmpty());
+
+		updatedDoc.setOriginalUploaderID(existingDoc.getOriginalUploaderID());
+
+		if (hasNewFile) {
+			newS3Key = updatedDoc.generateS3Key(ownerId, file);
+			updatedDoc.setFileURL(newS3Key);
+			updatedDoc.setFileType(file.getContentType());
+		} else {
+			updatedDoc.setFileURL(existingDoc.getFileURL());
+			updatedDoc.setFileType(existingDoc.getFileType());
+		}
 
 		try {
-			newFileUrl = s3Service.uploadFile(bucketName, newS3Key, file.getInputStream());
+			// Only upload if a new file exists
+			if (hasNewFile) {
+				newFileUrl = s3Service.uploadFile(bucketName, newS3Key, file.getInputStream());
+			}
 			documentRepository.save(updatedDoc);
 
 		} catch (IOException e) {
 			e.printStackTrace();
 			return "Failed to upload new file to S3";
 		} catch (Exception e) {
-			// Catching database exceptions: Rollback the NEW S3 upload so we don't leave orphans
 			e.printStackTrace();
-			s3Service.deleteFile(bucketName, newS3Key);
-			return "Database update failed, rolled back new s3 upload";
-		}
-
-		// Delete the OLD file from S3 (only happens if new upload and DB update succeed)
-		try {
-			if (oldS3Key != null && !oldS3Key.isEmpty()) {
-				s3Service.deleteFile(bucketName, oldS3Key);
+			// Rollback S3 upload only if we actually uploaded a new one
+			if (hasNewFile && newS3Key != null) {
+				s3Service.deleteFile(bucketName, newS3Key);
+				return "Database update failed, rolled back new s3 upload";
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Warning: Failed to delete old S3 file: " + oldS3Key);
+			return "Database update failed";
 		}
 
-		return newFileUrl;
+		// Delete the OLD file from S3 (only if a new file was provided and everything succeeded)
+		if (hasNewFile && oldS3Key != null && !oldS3Key.isEmpty() && !oldS3Key.equals(newS3Key)) {
+			try {
+				s3Service.deleteFile(bucketName, oldS3Key);
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.err.println("Warning: Failed to delete old S3 file: " + oldS3Key);
+			}
+		}
+		return "Document updated successfully";
 	}
 
 }

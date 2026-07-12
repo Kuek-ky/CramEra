@@ -1,6 +1,7 @@
 package com.cram_era.backend.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -32,4 +33,7 @@ AND d.visibility = 'public'
             String docTag,
             String module
     );
+
+    @Query("SELECT d FROM Document d JOIN FETCH d.module WHERE d.id = :id")
+    Optional<Document> findByIdWithModule(@Param("id") Integer id);
 }

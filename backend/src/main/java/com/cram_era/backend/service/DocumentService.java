@@ -75,6 +75,12 @@ public class DocumentService {
                         new NoSuchElementException("Document not found with id: " + id));
     }
 
+    public Document getDocumentWithModuleById(int id) {
+        return documentRepository.findByIdWithModule(id)
+                .orElseThrow(() ->
+                        new NoSuchElementException("Document not found with id: " + id));
+    }
+
     public String getFullDocumentUrlById(int id) {
         Document document = getDocumentById(id);
         return baseUrl + document.getFileURL();

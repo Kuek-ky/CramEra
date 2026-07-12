@@ -27,6 +27,13 @@ export default function AppTabs() {
           renderingMode="template"
         />
       </NativeTabs.Trigger>
+
+    <NativeTabs.Trigger name="editDocDetails">
+        <NativeTabs.Trigger.Label>docs</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
+            renderingMode="template"
+        />
+    </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
