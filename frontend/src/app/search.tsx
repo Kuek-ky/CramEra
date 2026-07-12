@@ -5,7 +5,7 @@ import {
     Text,
     TextInput,
     FlatList,
-    Pressable,
+    Pressable, View,
 } from "react-native";
 
 interface Document {
@@ -72,7 +72,7 @@ export default function SearchScreen() {
     // }, [search]);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
 
             <Text style={styles.header}>Search</Text>
 
@@ -90,7 +90,7 @@ export default function SearchScreen() {
                     <Pressable style={styles.card}>
 
                         <Text style={styles.module}>
-                            {item.module}
+                            {item.module.moduleCode}
                         </Text>
 
                         <Text style={styles.title}>
@@ -105,7 +105,7 @@ export default function SearchScreen() {
                 )}
             />
 
-        </SafeAreaView>
+        </View>
     );
 }
 
