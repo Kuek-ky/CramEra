@@ -3,14 +3,23 @@ package com.cram_era.backend.controller;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.cram_era.backend.entities.Document;
 import com.cram_era.backend.repository.DocumentRepository;
 import com.cram_era.backend.service.DocumentService;
 import com.cram_era.backend.service.S3Service;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import tools.jackson.databind.ObjectMapper;
 
 //this file involves data manipulation with the S3 bucket
@@ -39,7 +48,6 @@ public class FileUploadController {
 	@PostMapping(path="/upload")
 	public String handleFileUpload(@RequestPart("file") MultipartFile file,
 	                               @RequestPart("document") Document newDoc){
-		String fileUrl = "";
 		int docOwnerId = newDoc.getOwnerUserID();
 		String uniqueFileName = newDoc.generateS3Key(docOwnerId, file);
 		String fileType = file.getContentType();
@@ -49,12 +57,14 @@ public class FileUploadController {
 		}
 		try {
 			// Upload to S3
-			fileUrl = s3Service.uploadFile(bucketName, uniqueFileName, file.getInputStream());
+			s3Service.uploadFile(bucketName, uniqueFileName, file.getInputStream());
 
 			newDoc.setOriginalUploaderID(docOwnerId);
 			newDoc.setFileURL(uniqueFileName);
 			newDoc.setFileType(fileType);
 			documentRepository.save(newDoc);
+
+			return "Upload successful";
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -65,7 +75,6 @@ public class FileUploadController {
 			s3Service.deleteFile(bucketName, uniqueFileName);
 			return "Database insert failed, rolled back s3 upload";
 		}
-		return fileUrl;
 	}
 
 	@DeleteMapping("/delete/{id}")

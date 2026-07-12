@@ -1,20 +1,20 @@
 package com.cram_era.backend.service;
 
+import java.util.NoSuchElementException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
 import com.cram_era.backend.entities.Document;
 import com.cram_era.backend.entities.Module;
 import com.cram_era.backend.repository.DocumentRepository;
 import com.cram_era.backend.repository.ModuleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-
-import java.util.NoSuchElementException;
 
 @Service
 public class DocumentService {
@@ -109,4 +109,12 @@ public class DocumentService {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }
+
+    public String getPresignedUrl(int id){
+
+        Document doc = getDocumentById(id);
+
+        return s3Service.generatePresignedUrl(doc.getFileURL());
+    }
+
 }

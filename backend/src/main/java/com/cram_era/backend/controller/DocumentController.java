@@ -1,13 +1,17 @@
 package com.cram_era.backend.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.cram_era.backend.entities.Document;
 import com.cram_era.backend.service.DocumentService;
 import com.cram_era.backend.service.S3Service;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
-import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("document")
@@ -37,8 +41,14 @@ public class DocumentController {
 		return documentService.getFullDocumentUrlById(id);
 	}
 
-	@GetMapping("/file/{id}")
-	public ResponseEntity<Resource> getFile(@PathVariable int id) {
+	@GetMapping("/download/{id}")
+	public ResponseEntity<Resource> downloadFile(@PathVariable("id") int id) {
 		return documentService.downloadFile(id);
 	}
+
+	@GetMapping("/view/{id}")
+	public String viewFile(@PathVariable("id") int id) {
+		return documentService.getPresignedUrl(id);
+	}
+	
 }
