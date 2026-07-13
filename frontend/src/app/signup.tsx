@@ -3,7 +3,7 @@ import { Pressable, Text, TextInput, View, ActivityIndicator } from "react-nativ
 import { Link, router } from "expo-router";
 
 // const API_BASE = "http://172.18.77.219:8080"; //ip address to come from your wsl container, NOT YOUR LOCAL MACHINE
-const API_BASE = "http://localhost:8080";
+const API_BASE = "http://172.18.110.10:8080";
 
 function sleep(ms: number){
     return new Promise((resolve) => setTimeout(resolve, ms));
