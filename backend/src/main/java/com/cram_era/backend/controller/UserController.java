@@ -5,8 +5,12 @@ import com.cram_era.backend.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import com.cram_era.backend.entities.UserLogin;
+import com.cram_era.backend.entities.LoginResponse;
 
 // in charge of receiving request, reading JSON body, printing to console
+@CrossOrigin(origins = {"http://localhost:8081", "http://127.0.0.1:8081"})
 @RestController
 public class UserController {
     private final UserService userService;
@@ -19,5 +23,10 @@ public class UserController {
     @PostMapping("/api/users")
     public String receiveRequest(@RequestBody UserCreation userCreation){
         return userService.createUser(userCreation);
+    }
+
+    @PostMapping("/api/login")
+    public LoginResponse login(@RequestBody UserLogin userLogin){
+        return userService.loginUser(userLogin);
     }
 }

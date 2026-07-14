@@ -4,6 +4,7 @@ package com.cram_era.backend.entities;
 public class UserCreation {
     private String userName;
     private String userEmail;
+    private String userPassword;
 
     public String getUserName() {
         return userName;
@@ -20,4 +21,8 @@ public class UserCreation {
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
     }
+
+    public String getUserPassword() { return userPassword; }
+
+    public void setUserPassword(String userPassword) { this.userPassword = userPassword; }
 }
