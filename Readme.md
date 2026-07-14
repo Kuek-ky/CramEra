@@ -6,4 +6,4 @@ To run the backend,
 To run the frontend, in a separate terminal  
 ``npm install`` <-- FOR THE 1ST TIME  
 ``cd frontend``  
-``npm start``  
+``npm start`` OR ``npx expo start --tunnel --android`` (for testing on android emulator)
