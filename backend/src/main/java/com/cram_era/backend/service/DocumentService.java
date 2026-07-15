@@ -1,9 +1,6 @@
 package com.cram_era.backend.service;
 
-<<<<<<< HEAD
-=======
 import java.util.List;
->>>>>>> main
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,12 +126,12 @@ public class DocumentService {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }
-
+    
     public String getPresignedUrl(int id){
 
         Document doc = getDocumentById(id);
 
         return s3Service.generatePresignedUrl(doc.getFileURL());
     }
-
 }
+

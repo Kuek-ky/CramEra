@@ -5,6 +5,8 @@ import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,7 +53,7 @@ public class FileUploadController {
 	}
 
 	@PostMapping(path="/upload")
-	public String handleFileUpload(@RequestPart("file") MultipartFile file,
+	public ResponseEntity<String> handleFileUpload(@RequestPart("file") MultipartFile file,
 	                               @RequestPart("document") Document newDoc){
 
 		System.out.println("UPLOAD HIT");
@@ -62,7 +64,7 @@ public class FileUploadController {
 		String fileType = file.getContentType();
 		Document success = null;
 		if (file.isEmpty()) {
-			return "no file uploaded!";
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded!");
 		}
 		try {
 			// Upload to S3
@@ -86,16 +88,16 @@ public class FileUploadController {
 
 			System.out.println("About to return");
 
-			return "Upload successful";
+			return ResponseEntity.ok("Upload successful");
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			return "Failed to upload to S3";
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload to S3");
 		} catch (Exception e) {
 			// Catching database or other runtime exceptions
 			e.printStackTrace();
 			s3Service.deleteFile(bucketName, uniqueFileName);
-			return "Database insert failed, rolled back s3 upload";
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database insert failed, rolled back S3 upload");
 		}
 	}
 

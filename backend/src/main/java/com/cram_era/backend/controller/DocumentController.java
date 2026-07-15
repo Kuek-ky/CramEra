@@ -13,6 +13,10 @@ import com.cram_era.backend.entities.Document;
 import com.cram_era.backend.service.DocumentService;
 import com.cram_era.backend.service.S3Service;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 import java.util.List;
 
@@ -48,7 +52,6 @@ public class DocumentController {
 		return documentService.getPresignedUrl(id);
 	}
 	
-
     @GetMapping("/file/{id}")
     public ResponseEntity<Resource> getFile(@PathVariable int id) {
         return documentService.downloadFile(id);
