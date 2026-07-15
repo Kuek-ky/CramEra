@@ -45,9 +45,18 @@ public class FileUploadController {
 		return "upload";
 	}
 
+	@PostMapping("/test")
+	public String test() {
+		return "POST works!";
+	}
+
 	@PostMapping(path="/upload")
 	public String handleFileUpload(@RequestPart("file") MultipartFile file,
 	                               @RequestPart("document") Document newDoc){
+
+		System.out.println("UPLOAD HIT");
+
+		String fileUrl = "";
 		int docOwnerId = newDoc.getOwnerUserID();
 		String uniqueFileName = newDoc.generateS3Key(docOwnerId, file);
 		String fileType = file.getContentType();
@@ -62,7 +71,20 @@ public class FileUploadController {
 			newDoc.setOriginalUploaderID(docOwnerId);
 			newDoc.setFileURL(uniqueFileName);
 			newDoc.setFileType(fileType);
-			documentRepository.save(newDoc);
+
+
+			System.out.println("Title = " + newDoc.getTitle());
+			System.out.println("Description = " + newDoc.getDescription());
+
+			Document saved = documentRepository.save(newDoc);
+
+			System.out.println("Saved successfully");
+			System.out.println(saved.getId());
+
+			long count = documentRepository.count();
+			System.out.println("Count = " + count);
+
+			System.out.println("About to return");
 
 			return "Upload successful";
 

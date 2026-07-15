@@ -12,9 +12,9 @@ import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 
 
-/* 
+/*
 @RestController
-@RequestMapping("examplehere") 
+@RequestMapping("examplehere")
 public class testcontroller {
 
 	@GetMapping(path="/testing") //find this on localhost:8080/examplehere/testing, using postman
@@ -43,13 +43,108 @@ export default function Landing() {
 
   }, []);
 
+  // return (
+  //   <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 24 }}>
+  //     <Text style={{ fontSize: 28, fontWeight: "600" }}>CramEra</Text>
+  //     {status === "loading" && <ActivityIndicator style={{ marginTop: 16 }} />}
+  //     {status === "ok" && <Text style={{ marginTop: 16 }}>Backend says: {message}</Text>}
+  //     {status === "error" && <Text style={{ marginTop: 16, color: "red" }}>Can't reach backend: {message}</Text>}
+  //   </View>
+  // );
+
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 24 }}>
-      <Text style={{ fontSize: 28, fontWeight: "600" }}>CramEra</Text>
-      {status === "loading" && <ActivityIndicator style={{ marginTop: 16 }} />}
-      {status === "ok" && <Text style={{ marginTop: 16 }}>Backend says: {message}</Text>}
-      {status === "error" && <Text style={{ marginTop: 16, color: "red" }}>Can't reach backend: {message}</Text>}
-    </View>
+      <View
+          style={{
+            flex: 1,
+            backgroundColor: "#eef5ff",
+            paddingTop: 60,
+            paddingHorizontal: 20,
+          }}
+      >
+        {/* Header */}
+        <Text
+            style={{
+              fontSize: 32,
+              fontWeight: "bold",
+              marginBottom: 20,
+            }}
+        >
+          Library 📚
+        </Text>
+
+        {/* Backend Status */}
+        <View
+            style={{
+              backgroundColor: "white",
+              padding: 15,
+              borderRadius: 12,
+              marginBottom: 20,
+            }}
+        >
+          <Text style={{ fontWeight: "600" }}>Backend Status</Text>
+
+          {status === "loading" && <ActivityIndicator />}
+
+          {status === "ok" && (
+              <Text style={{ color: "green", marginTop: 8 }}>
+                {message}
+              </Text>
+          )}
+
+          {status === "error" && (
+              <Text style={{ color: "red", marginTop: 8 }}>
+                {message}
+              </Text>
+          )}
+        </View>
+
+        {/* Search Bar */}
+        <View
+            style={{
+              backgroundColor: "white",
+              borderRadius: 30,
+              padding: 15,
+              marginBottom: 20,
+            }}
+        >
+          <Text style={{ color: "grey" }}>🔍 Search...</Text>
+        </View>
+
+        {/* Example Cards */}
+        <View
+            style={{
+              backgroundColor: "white",
+              borderRadius: 15,
+              padding: 20,
+              marginBottom: 15,
+            }}
+        >
+          <Text style={{ fontWeight: "bold", fontSize: 18 }}>
+            CS2040 Notes
+          </Text>
+
+          <Text style={{ color: "grey", marginTop: 5 }}>
+            Algorithms and Data Structures
+          </Text>
+        </View>
+
+        <View
+            style={{
+              backgroundColor: "white",
+              borderRadius: 15,
+              padding: 20,
+            }}
+        >
+          <Text style={{ fontWeight: "bold", fontSize: 18 }}>
+            IS216 Cheatsheet
+          </Text>
+
+          <Text style={{ color: "grey", marginTop: 5 }}>
+            Software Product Management
+          </Text>
+        </View>
+
+      </View>
   );
 }
 
@@ -107,38 +202,3 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
-});*/

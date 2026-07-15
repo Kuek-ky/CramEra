@@ -1,5 +1,9 @@
 package com.cram_era.backend.service;
 
+<<<<<<< HEAD
+=======
+import java.util.List;
+>>>>>>> main
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,25 +32,41 @@ public class DocumentService {
 
     @Autowired
     public DocumentService(DocumentRepository documentRepository,
-                           ModuleRepository moduleRepository,
-                           S3Service s3Service) {
+            ModuleRepository moduleRepository,
+            S3Service s3Service) {
         this.documentRepository = documentRepository;
         this.moduleRepository = moduleRepository;
         this.s3Service = s3Service;
     }
 
+    public List<Document> searchDocuments(
+            String name,
+            String docType,
+            String docTag,
+            String module
+    ) {
+
+        return documentRepository.searchDocuments(
+                name,
+                docType,
+                docTag,
+                module
+        );
+
+    }
+
     public Document insertDocument(int ownerId,
-                                   int moduleId,
-                                   String title,
-                                   String description,
-                                   String fileType,
-                                   String fileUrl,
-                                   String visibility,
-                                   String documentType) {
+            int moduleId,
+            String title,
+            String description,
+            String fileType,
+            String fileUrl,
+            String visibility,
+            String documentType) {
 
         Module module = moduleRepository.findById(moduleId)
-                .orElseThrow(() ->
-                        new NoSuchElementException("Module not found with id: " + moduleId));
+                .orElseThrow(()
+                        -> new NoSuchElementException("Module not found with id: " + moduleId));
 
         Document document = new Document();
 
@@ -71,8 +91,8 @@ public class DocumentService {
 
     public Document getDocumentById(int id) {
         return documentRepository.findById(id)
-                .orElseThrow(() ->
-                        new NoSuchElementException("Document not found with id: " + id));
+                .orElseThrow(()
+                        -> new NoSuchElementException("Document not found with id: " + id));
     }
 
     public Document getDocumentWithModuleById(int id) {

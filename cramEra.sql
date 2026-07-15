@@ -5,7 +5,8 @@ CREATE TABLE users (
 	users_ID int AUTO_INCREMENT, 
     user_name varchar(20), 
     user_email varchar(40), 
-    created_at timestamp DEFAULT CURRENT_TIMESTAMP, 
+    password_hash varchar(255),
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT users_IDPK PRIMARY KEY (users_ID)
 );
 
@@ -120,10 +121,10 @@ CREATE TABLE document_tags (
 
 
 -- 1. Insert Users
-INSERT INTO users (users_ID, user_name, user_email) VALUES
-(1, 'Alice Smith', 'alice@example.com'),
-(2, 'Bob Jones', 'bob@example.com'),
-(3, 'Charlie Brown', 'charlie@example.com');
+INSERT INTO users (user_name, user_email, password_hash) VALUES
+('pw_password123', 'alice@example.com', '$2a$10$owvd3wDx4lMgKsvC/33njOsCxWVfX5M8rnfSwbTO4/opoQYoq.l8W'),
+('pw_applepi3', 'test@gmail.com', '$2a$10$68dcyOJNiTx4prfRGhOcLu3MvQdXpuZqozKymcnKJ/.SosE7WwgE6'),
+('pw_lyingcak3', 'wassup@example.com', '$2a$10$dGgAkMLMaVvzxVyuCBhdQO9OpF11JIWidR67XELsW9EL50m2iA4aC');
 
 -- 2. Insert Schools
 INSERT INTO schools (schools_ID, school_name, school_description) VALUES
