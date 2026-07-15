@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import {
-    SafeAreaView,
     StyleSheet,
     Text,
     TextInput,
@@ -8,6 +7,8 @@ import {
     View,
     Pressable,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import style from "@/app/global-stylesheet";
 
 interface Document {
     id:number;
@@ -64,7 +65,7 @@ export default function PersonalScreen(){
 
     return(
 
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={style.container}>
 
             <Text style={styles.header}>
                 My Documents
@@ -129,12 +130,6 @@ export default function PersonalScreen(){
 }
 
 const styles=StyleSheet.create({
-
-    container:{
-        flex:1,
-        backgroundColor:"#EEF4FF",
-        padding:20
-    },
 
     header:{
         fontSize:30,

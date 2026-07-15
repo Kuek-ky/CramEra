@@ -1,7 +1,5 @@
 import { Text, View, StyleSheet, Image, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-
-
 type PublicDocument = {
     documentId: number;
     title: string;
@@ -17,6 +15,7 @@ const documentPlaceholder2 = require("../../assets/images/document-placeholder-2
 const documentPlaceholder3 = require("../../assets/images/document-placeholder-3.png");
 
 export default function Profile() {
+
     const { userName, userEmail } = useLocalSearchParams();
     const displayName = userName ?? "Unknown User";
     // ?? -> If username is missing, return back "Unknown User"

@@ -1,68 +1,105 @@
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
-import { useColorScheme } from 'react-native';
-
-import { Colors } from '@/constants/theme';
+import { Tabs } from 'expo-router';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import style from './app-tabs-stylesheet';
 
 export default function AppTabs() {
-  const scheme = useColorScheme();
-  const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
+    const TabIcon = ({name, src, color, focused }) => {
+        if (focused) {
+            return (
+                <View style={style.floatingTabBtnContainer}>
+                    <Image
+                        source={src}
+                        style={[style.icon, { tintColor: color }]}
+                    />
+                    <Text style={[style.tabText, {color: color}]}>{name}</Text>
+                </View>
+            );
+        }
 
-  // return (
-  //   <NativeTabs
-  //     backgroundColor={colors.background}
-  //     indicatorColor={colors.backgroundElement}
-  //     labelStyle={{ selected: { color: colors.text } }}>
-  //     <NativeTabs.Trigger name="index">
-  //       <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
-  //       <NativeTabs.Trigger.Icon
-  //         src={require('@/assets/images/tabIcons/home.png')}
-  //         renderingMode="template"
-  //       />
-  //     </NativeTabs.Trigger>
-  //
-  //     <NativeTabs.Trigger name="explore">
-  //       <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
-  //       <NativeTabs.Trigger.Icon
-  //         src={require('@/assets/images/tabIcons/explore.png')}
-  //         renderingMode="template"
-  //       />
-  //     </NativeTabs.Trigger>
-  //   </NativeTabs>
-  // );
-
+        return (
+            <View style={style.defaultTabBtnContainer}>
+                <Image
+                    source={src}
+                    style={[style.icon, { tintColor: color }]}
+                />
+                <Text style={[style.tabText, {color: color}]}>{name}</Text>
+            </View>
+        );
+    };
     return (
-        <NativeTabs
-            backgroundColor={colors.background}
-            indicatorColor={colors.backgroundElement}
-            labelStyle={{ selected: { color: colors.text } }}>
+        <Tabs
+            screenOptions={{
+                tabBarActiveTintColor: '#FFF',
+                tabBarInactiveTintColor: '#000',
+                tabBarStyle: style.floatingTabBar,
+                headerShown: false,
+                tabBarShowLabel: false,
+            }}
+        >
+            <Tabs.Screen
+                name="personal_documents"
+                options={{
+                    tabBarIcon: (props) =>
+                        <TabIcon
+                            src={require('@/assets/images/tabIcons/document.png')}
+                            color={props.color}
+                            focused={props.focused}
+                            name={'Docs'}
+                        />,
+                }}
+            />
 
-            {/* Holy Grail Library */}
-            <NativeTabs.Trigger name="index">
-                <NativeTabs.Trigger.Label>Library</NativeTabs.Trigger.Label>
-                <NativeTabs.Trigger.Icon
-                    src={require('@/assets/images/tabIcons/home.png')}
-                    renderingMode="template"
-                />
-            </NativeTabs.Trigger>
+            <Tabs.Screen
+                name="flashcards"
+                options={{
+                    tabBarIcon: (props) =>
+                        <TabIcon
+                            src={require('@/assets/images/tabIcons/flashcards.png')}
+                            color={props.color}
+                            focused={props.focused}
+                            name={'Flashcards'}
+                        />,
+                }}
+            />
 
-            {/* Search */}
-            <NativeTabs.Trigger name="search">
-                <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
-                <NativeTabs.Trigger.Icon
-                    src={require('@/assets/images/tabIcons/explore.png')}
-                    renderingMode="template"
-                />
-            </NativeTabs.Trigger>
+            <Tabs.Screen
+                name="home"
+                options={{
+                    tabBarIcon: (props) =>
+                        <TabIcon
+                            src={require('@/assets/images/tabIcons/home.png')}
+                            color={props.color}
+                            focused={props.focused}
+                            name={'Home'}
+                        />,
+                }}
+            />
 
-            {/* Personal Documents */}
-            <NativeTabs.Trigger name="personal">
-                <NativeTabs.Trigger.Label>My Docs</NativeTabs.Trigger.Label>
-                <NativeTabs.Trigger.Icon
-                    src={require('@/assets/images/tabIcons/home.png')}
-                    renderingMode="template"
-                />
-            </NativeTabs.Trigger>
+            <Tabs.Screen
+                name="holygrail"
+                options={{
+                    tabBarIcon: (props) =>
+                        <TabIcon
+                            src={require('@/assets/images/tabIcons/search.png')}
+                            color={props.color}
+                            focused={props.focused}
+                            name={'The Grail'}
+                        />,
+                }}
+            />
 
-        </NativeTabs>
+            <Tabs.Screen
+                name="settings"
+                options={{
+                    tabBarIcon: (props) =>
+                        <TabIcon
+                            src={require('@/assets/images/tabIcons/settings.png')}
+                            color={props.color}
+                            focused={props.focused}
+                            name={'Settings'}
+                        />,
+                }}
+            />
+        </Tabs>
     );
 }
