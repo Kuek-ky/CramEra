@@ -1,103 +1,132 @@
-import { Tabs } from 'expo-router';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import style from './app-tabs-stylesheet';
+import { Tabs } from "expo-router";
+import { Image, Text, View } from "react-native";
+
+import { Colors } from "@/theme/Index";
+import style from "./app-tabs-stylesheet";
+
+interface TabIconProps {
+    name: string;
+    src: any;
+    color: string;
+    focused: boolean;
+}
 
 export default function AppTabs() {
-    const TabIcon = ({name, src, color, focused }) => {
-        if (focused) {
-            return (
-                <View style={style.floatingTabBtnContainer}>
-                    <Image
-                        source={src}
-                        style={[style.icon, { tintColor: color }]}
-                    />
-                    <Text style={[style.tabText, {color: color}]}>{name}</Text>
-                </View>
-            );
-        }
-
+    const TabIcon = ({
+        name,
+        src,
+        color,
+        focused,
+    }: TabIconProps) => {
         return (
-            <View style={style.defaultTabBtnContainer}>
+            <View
+                style={
+                    focused
+                        ? style.floatingTabBtnContainer
+                        : style.defaultTabBtnContainer
+                }
+            >
                 <Image
                     source={src}
-                    style={[style.icon, { tintColor: color }]}
+                    style={[
+                        style.icon,
+                        {
+                            tintColor: color,
+                        },
+                    ]}
                 />
-                <Text style={[style.tabText, {color: color}]}>{name}</Text>
+
+                <Text
+                    style={[
+                        style.tabText,
+                        {
+                            color,
+                        },
+                    ]}
+                >
+                    {name}
+                </Text>
             </View>
         );
     };
+
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: '#FFF',
-                tabBarInactiveTintColor: '#000',
-                tabBarStyle: style.floatingTabBar,
                 headerShown: false,
                 tabBarShowLabel: false,
+                tabBarStyle: style.floatingTabBar,
+                tabBarActiveTintColor: Colors.white,
+                tabBarInactiveTintColor: Colors.textSecondary,
             }}
         >
             <Tabs.Screen
                 name="personal_documents"
                 options={{
-                    tabBarIcon: (props) =>
+                    tabBarIcon: ({ color, focused }) => (
                         <TabIcon
-                            src={require('@/assets/images/tabIcons/document.png')}
-                            color={props.color}
-                            focused={props.focused}
-                            name={'Docs'}
-                        />,
+                            name="Docs"
+                            src={require("@/assets/images/tabIcons/document.png")}
+                            color={color}
+                            focused={focused}
+                        />
+                    ),
                 }}
             />
 
             <Tabs.Screen
                 name="flashcards"
                 options={{
-                    tabBarIcon: (props) =>
+                    tabBarIcon: ({ color, focused }) => (
                         <TabIcon
-                            src={require('@/assets/images/tabIcons/flashcards.png')}
-                            color={props.color}
-                            focused={props.focused}
-                            name={'Flashcards'}
-                        />,
+                            name="Flashcards"
+                            src={require("@/assets/images/tabIcons/flashcards.png")}
+                            color={color}
+                            focused={focused}
+                        />
+                    ),
                 }}
             />
 
             <Tabs.Screen
                 name="home"
                 options={{
-                    tabBarIcon: (props) =>
+                    tabBarIcon: ({ color, focused }) => (
                         <TabIcon
-                            src={require('@/assets/images/tabIcons/home.png')}
-                            color={props.color}
-                            focused={props.focused}
-                            name={'Home'}
-                        />,
+                            name="Home"
+                            src={require("@/assets/images/tabIcons/home.png")}
+                            color={color}
+                            focused={focused}
+                        />
+                    ),
                 }}
             />
 
             <Tabs.Screen
                 name="holygrail"
                 options={{
-                    tabBarIcon: (props) =>
+                    tabBarIcon: ({ color, focused }) => (
                         <TabIcon
-                            src={require('@/assets/images/tabIcons/search.png')}
-                            color={props.color}
-                            focused={props.focused}
-                            name={'The Grail'}
-                        />,
+                            name="The Grail"
+                            src={require("@/assets/images/tabIcons/search.png")}
+                            color={color}
+                            focused={focused}
+                        />
+                    ),
                 }}
             />
 
             <Tabs.Screen
                 name="settings"
                 options={{
-                    tabBarIcon: (props) =>
+                    tabBarIcon: ({ color, focused }) => (
                         <TabIcon
-                            src={require('@/assets/images/tabIcons/settings.png')}
-                            color={props.color}
-                            focused={props.focused}
-                            name={'Settings'}
-                        />,
+                            name="Settings"
+                            src={require("@/assets/images/tabIcons/settings.png")}
+                            color={color}
+                            focused={focused}
+                        />
+                    ),
                 }}
             />
         </Tabs>

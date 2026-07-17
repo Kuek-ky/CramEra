@@ -1,8 +1,17 @@
-import {useEffect, useState} from "react";
-import {ActivityIndicator, Text, View} from "react-native";
-import {SafeAreaView} from 'react-native-safe-area-context';
-import style from "@/app/global-stylesheet";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Text, View } from "react-native";
 import SearchScreen from "@/components/search"
+
+import Screen from "@/components/common/Screen";
+import Header from "@/components/common/Header";
+import Card from "@/components/common/Card";
+
+import {
+    Colors,
+    Radius,
+    Spacing,
+    Typography,
+} from "@/theme/Index";
 
 const API_BASE = "http://172.18.77.219:8080"; //ip address to come from your wsl container, NOT YOUR LOCAL MACHINE
 
@@ -14,35 +23,30 @@ export default function Landing() {
     const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
     const [message, setMessage] = useState("");
     return (
-        <SafeAreaView style={style.container}>
+        <Screen>
             {/* Header */}
-            <Text
-                style={{
-                    fontSize: 32,
-                    fontWeight: "bold",
-                    marginBottom: 20,
-                }}
-            >
-                Library 📚
-            </Text>
+            <Header
+                title="Library"
+                subtitle="Browse documents and flashcards"
+            />
 
             {/* Backend Status */}
             <View
                 style={{
-                    backgroundColor: "grey",
+                    backgroundColor: Colors.border,
                     borderRadius: 30,
                     marginBottom: 20,
-                    position:"relative",
+                    position: "relative",
                     flexDirection: "row",
                     justifyContent: "space-between",
                     borderWidth: 1,
-                    borderColor: "#b6b6ff"
+                    borderColor: Colors.primaryLight
                 }}
             >
                 <View style={{
-                    backgroundColor: "white",
+                    backgroundColor: Colors.surface,
                     padding: 7,
-                    borderRadius: 30,
+                    borderRadius: Radius.pill,
                     width: "50%"
                 }}>
                     <Text style={{
@@ -55,7 +59,7 @@ export default function Landing() {
                     width: "50%"
                 }}>
                     <Text style={{
-                        color: "white",
+                        color: Colors.surface,
                         textAlign: "center"
                     }}>Flashcards (WIP)</Text>
                 </View>
@@ -107,11 +111,14 @@ export default function Landing() {
             {/*    </Text>*/}
             {/*</View>*/}
 
-            <SearchScreen/>
+            <SearchScreen />
 
-        </SafeAreaView>
+        </Screen>
     );
 }
+
+
+
 
 
 

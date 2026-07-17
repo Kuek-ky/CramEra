@@ -1,5 +1,5 @@
 import { TextStyle } from "react-native";
-import { Colors } from "./colors";
+import { Colors } from "./Colors";
 
 export const Typography: Record<string, TextStyle> = {
   h1: {

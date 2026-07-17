@@ -1,49 +1,78 @@
-import { StyleSheet } from "react-native"
+import { StyleSheet } from "react-native";
+import {
+    Colors,
+    Radius,
+    Shadows,
+    Spacing,
+} from "@/theme/Index";
 
 export default StyleSheet.create({
+
     floatingTabBar: {
-        backgroundColor: '#FFF',
-        borderRadius: 25,
-        height: 60,
-        width: "90%",
+        position: "absolute",
+
+        left: Spacing.lg,
+        right: Spacing.lg,
+        bottom: Spacing.lg,
+
+        height: 72,
+
+        borderRadius: Radius.lg,
+
+        backgroundColor: Colors.surface,
+
         borderTopWidth: 0,
-        paddingTop: 10,
-        alignSelf: "center",
-        bottom: 20,
-        elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+
+        ...Shadows.floating,
     },
+
     icon: {
         width: 24,
         height: 24,
-        resizeMode: 'contain',
+        resizeMode: "contain",
     },
+
     floatingTabBtnContainer: {
-        top: -15,
+
+        width: 64,
+        height: 64,
+
+        borderRadius: Radius.pill,
+
+        justifyContent: "center",
+        alignItems: "center",
+
+        backgroundColor: Colors.primary,
+
+        marginTop: -28,
+    },
+
+    defaultTabBtnContainer: {
+
         width: 60,
         height: 60,
-        borderRadius: 35,
-        backgroundColor: '#2d5082',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingTop: 2,
-        paddingBottom: 2
+
+        justifyContent: "center",
+        alignItems: "center",
+
     },
+
     floatingTabBtn: {
-        justifyContent: 'center',
-        alignItems: 'center',
+
+        justifyContent: "center",
+        alignItems: "center",
+
     },
 
     tabText: {
-        fontSize: 9
+
+        ...{
+            fontSize: 11,
+            fontWeight: "600",
+        },
+
+        marginTop: 2,
+
     },
-    defaultTabBtnContainer: {
-        width: 55,
-        height: 55,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
+
 });

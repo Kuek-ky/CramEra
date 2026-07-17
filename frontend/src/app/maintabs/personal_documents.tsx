@@ -7,120 +7,109 @@ import {
     View,
     Pressable,
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Screen from "@/components/common/Screen";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
-import style from "@/app/global-stylesheet";
+
 
 interface Document {
-    id:number;
-    title:string;
-    module:string;
-    type:string;
+    id: number;
+    title: string;
+    module: string;
+    type: string;
 }
 
-export default function PersonalScreen(){
+export default function PersonalScreen() {
 
-    const [search,setSearch]=useState("");
+    const [search, setSearch] = useState("");
 
-    const documents:Document[]=[
+    const documents: Document[] = [
 
         {
-            id:1,
-            title:"Week 5 Java Notes",
-            module:"CS101",
-            type:"Created"
+            id: 1,
+            title: "Week 5 Java Notes",
+            module: "CS101",
+            type: "Created"
         },
 
         {
-            id:2,
-            title:"Database Cheatsheet",
-            module:"IS216",
-            type:"Created"
+            id: 2,
+            title: "Database Cheatsheet",
+            module: "IS216",
+            type: "Created"
         },
 
         {
-            id:3,
-            title:"React Native Guide",
-            module:"CS303",
-            type:"Saved"
+            id: 3,
+            title: "React Native Guide",
+            module: "CS303",
+            type: "Saved"
         },
 
         {
-            id:4,
-            title:"Operating Systems",
-            module:"CS204",
-            type:"Saved"
+            id: 4,
+            title: "Operating Systems",
+            module: "CS204",
+            type: "Saved"
         }
 
     ];
 
-    const filtered=useMemo(()=>{
+    const filtered = useMemo(() => {
 
-        return documents.filter(doc=>
+        return documents.filter(doc =>
 
             doc.title.toLowerCase().includes(search.toLowerCase())
 
         );
 
-    },[search]);
+    }, [search]);
 
-    return(
+    return (
 
-        <SafeAreaView style={style.container}>
+        <Screen>
 
-            <Text style={styles.header}>
-                My Documents
-            </Text>
-
-            <TextInput
-
-                placeholder="Search my documents..."
-
-                style={styles.search}
-
-                value={search}
-
-                onChangeText={setSearch}
-
+            <Header
+                title="My Documents"
+                subtitle="Manage your uploaded and saved notes"
             />
 
-            <View style={styles.folder}>
+            <SearchBar
+                value={search}
+                onChange={setSearch}
+            />
+
+            <Card
+                style={styles.folder}
+            >
 
                 <Text style={styles.folderTitle}>
-                    📁 Folders
+                    Folders
                 </Text>
 
                 <Text style={styles.folderSubtitle}>
                     Coming Soon
                 </Text>
 
-            </View>
+            </Card>
 
             <FlatList
 
                 data={filtered}
 
-                keyExtractor={(item)=>item.id.toString()}
+                keyExtractor={(item) => item.id.toString()}
 
-                renderItem={({item})=>(
+                renderItem={({ item }) => (
 
-                    <Pressable style={styles.card}>
-
-                        <Text style={styles.module}>
-                            {item.module}
-                        </Text>
-
-                        <Text style={styles.title}>
-                            {item.title}
-                        </Text>
-
-                        <Text style={styles.type}>
-                            {item.type}
-                        </Text>
-
-                    </Pressable>
+                    <DocumentCard
+                        document={{
+                            module: item.module,
+                            title: item.title,
+                            description: item.type,
+                            author: "",
+                        }}
+                    />
 
                 )}
 
@@ -137,65 +126,65 @@ export default function PersonalScreen(){
                 />
             </Pressable>
 
-        </SafeAreaView>
+        </Screen>
 
     );
 
 }
 
-const styles=StyleSheet.create({
+const styles = StyleSheet.create({
 
-    header:{
-        fontSize:30,
-        fontWeight:"bold",
-        marginBottom:20
+    header: {
+        fontSize: 30,
+        fontWeight: "bold",
+        marginBottom: 20
     },
 
-    search:{
-        backgroundColor:"white",
-        borderRadius:30,
-        padding:15,
-        marginBottom:20
+    search: {
+        backgroundColor: Colors.surface,
+        borderRadius: 30,
+        padding: 15,
+        marginBottom: 20
     },
 
-    folder:{
-        backgroundColor:"#DDEBFF",
-        padding:18,
-        borderRadius:15,
-        marginBottom:20
+    folder: {
+        backgroundColor: "#DDEBFF",
+        padding: 18,
+        borderRadius: 15,
+        marginBottom: 20
     },
 
-    folderTitle:{
-        fontSize:18,
-        fontWeight:"bold"
+    folderTitle: {
+        fontSize: 18,
+        fontWeight: "bold"
     },
 
-    folderSubtitle:{
-        marginTop:5,
-        color:"grey"
+    folderSubtitle: {
+        marginTop: 5,
+        color: "grey"
     },
 
-    card:{
-        backgroundColor:"white",
-        padding:18,
-        borderRadius:15,
-        marginBottom:15,
-        elevation:3
+    card: {
+        backgroundColor: Colors.surface,
+        padding: 18,
+        borderRadius: 15,
+        marginBottom: 15,
+        elevation: 3
     },
 
-    module:{
-        color:"#4A7AFF",
-        fontWeight:"600"
+    module: {
+        color: Colors.primary,
+        fontWeight: "600"
     },
 
-    title:{
-        fontWeight:"bold",
-        fontSize:20,
-        marginVertical:5
+    title: {
+        fontWeight: "bold",
+        fontSize: 20,
+        marginVertical: 5
     },
 
-    type:{
-        color:"grey"
+    type: {
+        color: "grey"
     },
 
     createButton: {
@@ -209,7 +198,7 @@ const styles=StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         elevation: 10,
-        shadowColor: "#000",
+        shadowColor: Colors.black,
         shadowOffset: {
             width: 0,
             height: 4,

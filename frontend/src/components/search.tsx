@@ -1,11 +1,13 @@
 import { useMemo, useState, useEffect } from "react";
 import {
-    StyleSheet,
-    Text,
-    TextInput,
     FlatList,
-    Pressable, View,
+    View,
 } from "react-native";
+
+import Screen from "@/components/common/Screen";
+import Header from "@/components/common/Header";
+import SearchBar from "@/components/common/SearchBar";
+import DocumentCard from "@/components/document/DocumentCard";
 
 interface Document {
     id: number;
@@ -20,9 +22,9 @@ export default function SearchScreen() {
 
     const [search, setSearch] = useState("");
 
-    
+
     const [documents, setDocuments] = useState<Document[]>([]);
-    
+
     useEffect(() => {
 
         fetch(
@@ -35,85 +37,37 @@ export default function SearchScreen() {
     }, [search]);
 
     return (
-        <View>
+        <Screen>
 
-            {/*<Text style={styles.header}>Search</Text>*/}
+            <Header
+                title="Search"
+                subtitle="Find study materials"
+            />
 
-            <TextInput
-                placeholder="Search documents..."
-                style={styles.search}
+            <SearchBar
                 value={search}
-                onChangeText={setSearch}
+                onChange={setSearch}
             />
 
             <FlatList
                 data={documents}
                 keyExtractor={(item) => item.id.toString()}
+                contentContainerStyle={{
+                    paddingTop: 16,
+                    paddingBottom: 120,
+                }}
                 renderItem={({ item }) => (
-                    <Pressable style={styles.card}>
-
-                        <Text style={styles.module}>
-                            {item.module.moduleCode}
-                        </Text>
-
-                        <Text style={styles.title}>
-                            {item.title}
-                        </Text>
-
-                        <Text style={styles.author}>
-                            {item.author}
-                        </Text>
-
-                    </Pressable>
+                    <DocumentCard
+                        document={{
+                            module: item.module.moduleCode,
+                            title: item.title,
+                            description: item.description,
+                            author: item.author,
+                        }}
+                    />
                 )}
             />
 
-        </View>
+        </Screen>
     );
 }
-
-const styles = StyleSheet.create({
-
-    container: {
-        flex: 1,
-        backgroundColor: "#EEF4FF",
-        padding: 20
-    },
-
-    header: {
-        fontSize: 30,
-        fontWeight: "bold",
-        marginBottom: 20
-    },
-
-    search: {
-        backgroundColor: "white",
-        borderRadius: 30,
-        padding: 15,
-        marginBottom: 20
-    },
-
-    card: {
-        backgroundColor: "white",
-        borderRadius: 15,
-        padding: 18,
-        marginBottom: 15,
-        elevation: 3
-    },
-
-    module: {
-        color: "#4A7AFF",
-        fontWeight: "600"
-    },
-
-    title: {
-        fontSize: 20,
-        fontWeight: "bold",
-        marginVertical: 5
-    },
-
-    author: {
-        color: "grey"
-    }
-
-});

@@ -1,5 +1,5 @@
 import { Text } from "react-native";
-import { Typography } from "@/theme";
+import { Typography } from "@/theme/Index";
 
 interface Props {
   title: string;

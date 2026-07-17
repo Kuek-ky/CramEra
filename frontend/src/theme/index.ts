@@ -4,4 +4,4 @@ import {
   Radius,
   Typography,
   Shadows,
-} from "@/theme";
+} from "@/theme/Index";

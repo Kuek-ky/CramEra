@@ -9,7 +9,7 @@ import {
     Shadows,
     Spacing,
     Typography,
-} from "@/theme";
+} from "@/theme/Index";
 
 interface Props {
 

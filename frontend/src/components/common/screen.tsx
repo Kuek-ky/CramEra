@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native";
-import { Colors, Spacing } from "@/theme";
+import { Colors, Spacing } from "@/theme/Index";
 
 interface ScreenProps {
   children: React.ReactNode;
