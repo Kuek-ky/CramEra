@@ -123,7 +123,7 @@ public class FileUploadController {
 	}
 
 	@PutMapping(path="/update/{id}")
-	public String updateFileUpload(@PathVariable("id") int id,
+	public ResponseEntity<String> updateFileUpload(@PathVariable("id") int id,
 	                               @RequestPart(value = "file", required = false) MultipartFile file,
 	                               @RequestPart("document") String documentJson) {
 
@@ -135,10 +135,10 @@ public class FileUploadController {
 			existingDoc = documentService.getDocumentById(id);
 		} catch (NoSuchElementException e) {
 			e.printStackTrace();
-			return "Document not found in database";
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Document not found in database");
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "Invalid JSON payload";
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Invalid JSON payload");
 		}
 
 		updatedDoc.setId(id);
@@ -170,15 +170,15 @@ public class FileUploadController {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			return "Failed to upload new file to S3";
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update S3");
 		} catch (Exception e) {
 			e.printStackTrace();
 			// Rollback S3 upload only if we actually uploaded a new one
 			if (hasNewFile && newS3Key != null) {
 				s3Service.deleteFile(bucketName, newS3Key);
-				return "Database update failed, rolled back new s3 upload";
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database update failed, rolled back S3 upload");
 			}
-			return "Database update failed";
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database update failed");
 		}
 
 		// Delete the OLD file from S3 (only if a new file was provided and everything succeeded)
@@ -190,7 +190,7 @@ public class FileUploadController {
 				System.err.println("Warning: Failed to delete old S3 file: " + oldS3Key);
 			}
 		}
-		return "Document updated successfully";
+		return ResponseEntity.ok("Update successful");
 	}
 
 }
