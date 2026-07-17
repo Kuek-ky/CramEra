@@ -92,6 +92,12 @@ public class DocumentService {
                         -> new NoSuchElementException("Document not found with id: " + id));
     }
 
+    public Document getDocumentWithModuleById(int id) {
+        return documentRepository.findByIdWithModule(id)
+                .orElseThrow(() ->
+                        new NoSuchElementException("Document not found with id: " + id));
+    }
+
     public String getFullDocumentUrlById(int id) {
         Document document = getDocumentById(id);
         return baseUrl + document.getFileURL();
@@ -120,4 +126,12 @@ public class DocumentService {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }
+    
+    public String getPresignedUrl(int id){
+
+        Document doc = getDocumentById(id);
+
+        return s3Service.generatePresignedUrl(doc.getFileURL());
+    }
 }
+
