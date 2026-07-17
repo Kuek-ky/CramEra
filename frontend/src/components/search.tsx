@@ -34,46 +34,10 @@ export default function SearchScreen() {
 
     }, [search]);
 
-    // const documents: Document[] = [
-    //     {
-    //         id: 1,
-    //         title: "Java Notes",
-    //         module: "CS101",
-    //         author: "John",
-    //     },
-    //     {
-    //         id: 2,
-    //         title: "HTML Cheatsheet",
-    //         module: "IS113",
-    //         author: "Sarah",
-    //     },
-    //     {
-    //         id: 3,
-    //         title: "React Native Guide",
-    //         module: "CS303",
-    //         author: "Alex",
-    //     },
-    //     {
-    //         id: 4,
-    //         title: "Database Notes",
-    //         module: "IS216",
-    //         author: "Bob",
-    //     },
-    // ];
-
-    // const filtered = useMemo(() => {
-    //     return documents.filter(
-    //         (doc) =>
-    //             doc.title.toLowerCase().includes(search.toLowerCase()) ||
-    //             doc.module.toLowerCase().includes(search.toLowerCase()) ||
-    //             doc.author.toLowerCase().includes(search.toLowerCase())
-    //     );
-    // }, [search]);
-
     return (
-        <View style={styles.container}>
+        <View>
 
-            <Text style={styles.header}>Search</Text>
+            {/*<Text style={styles.header}>Search</Text>*/}
 
             <TextInput
                 placeholder="Search documents..."
