@@ -3,14 +3,26 @@ package com.cram_era.backend.controller;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.cram_era.backend.entities.Document;
 import com.cram_era.backend.repository.DocumentRepository;
 import com.cram_era.backend.service.DocumentService;
 import com.cram_era.backend.service.S3Service;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import tools.jackson.databind.ObjectMapper;
 
 //this file involves data manipulation with the S3 bucket
 @RestController
@@ -41,7 +53,7 @@ public class FileUploadController {
 	}
 
 	@PostMapping(path="/upload")
-	public String handleFileUpload(@RequestPart("file") MultipartFile file,
+	public ResponseEntity<String> handleFileUpload(@RequestPart("file") MultipartFile file,
 	                               @RequestPart("document") Document newDoc){
 
 		System.out.println("UPLOAD HIT");
@@ -52,11 +64,11 @@ public class FileUploadController {
 		String fileType = file.getContentType();
 		Document success = null;
 		if (file.isEmpty()) {
-			return "no file uploaded!";
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded!");
 		}
 		try {
 			// Upload to S3
-			fileUrl = s3Service.uploadFile(bucketName, uniqueFileName, file.getInputStream());
+			s3Service.uploadFile(bucketName, uniqueFileName, file.getInputStream());
 
 			newDoc.setOriginalUploaderID(docOwnerId);
 			newDoc.setFileURL(uniqueFileName);
@@ -76,16 +88,17 @@ public class FileUploadController {
 
 			System.out.println("About to return");
 
+			return ResponseEntity.ok("Upload successful");
+
 		} catch (IOException e) {
 			e.printStackTrace();
-			return "Failed to upload to S3";
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload to S3");
 		} catch (Exception e) {
 			// Catching database or other runtime exceptions
 			e.printStackTrace();
 			s3Service.deleteFile(bucketName, uniqueFileName);
-			return "Database insert failed, rolled back s3 upload";
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database insert failed, rolled back S3 upload");
 		}
-		return fileUrl;
 	}
 
 	@DeleteMapping("/delete/{id}")
@@ -110,61 +123,74 @@ public class FileUploadController {
 	}
 
 	@PutMapping(path="/update/{id}")
-	public String updateFileUpload(@PathVariable("id") int id,
-	                               @RequestPart("file") MultipartFile file,
-	                               @RequestPart("document") Document updatedDoc) {
-		Document existingDoc = null;
-		String oldS3Key = null;
-		String newFileUrl = "";
+	public ResponseEntity<String> updateFileUpload(@PathVariable("id") int id,
+	                               @RequestPart(value = "file", required = false) MultipartFile file,
+	                               @RequestPart("document") String documentJson) {
 
-		if (!file.isEmpty()) {
-			try {
-				// Get original document to get old file key
-				existingDoc = documentService.getDocumentById(id);
-				oldS3Key = existingDoc.getFileURL();
-			} catch (NoSuchElementException e) {
-				e.printStackTrace();
-				return "Document not found in database";
-			}
+		ObjectMapper mapper = new ObjectMapper();
+		Document updatedDoc;
+		Document existingDoc;
+		try {
+			updatedDoc = mapper.readValue(documentJson, Document.class);
+			existingDoc = documentService.getDocumentById(id);
+		} catch (NoSuchElementException e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Document not found in database");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Invalid JSON payload");
 		}
 
-		int ownerId = updatedDoc.getOwnerUserID();
-		//add in original id to allow repository.save to update row
 		updatedDoc.setId(id);
+		int ownerId = updatedDoc.getOwnerUserID();
 
-		// Generate new S3 key
-		String newS3Key = updatedDoc.generateS3Key(ownerId, file);
-		updatedDoc.setFileURL(newS3Key);
+		String oldS3Key = existingDoc.getFileURL();
+		String newS3Key = null;
+		String newFileUrl = "";
 
-		String fileType = file.getContentType();
-		updatedDoc.setFileType(fileType);
-		Document success = null;
+		boolean hasNewFile = (file != null && !file.isEmpty());
+
+		updatedDoc.setOriginalUploaderID(existingDoc.getOriginalUploaderID());
+
+		if (hasNewFile) {
+			newS3Key = updatedDoc.generateS3Key(ownerId, file);
+			updatedDoc.setFileURL(newS3Key);
+			updatedDoc.setFileType(file.getContentType());
+		} else {
+			updatedDoc.setFileURL(existingDoc.getFileURL());
+			updatedDoc.setFileType(existingDoc.getFileType());
+		}
 
 		try {
-			newFileUrl = s3Service.uploadFile(bucketName, newS3Key, file.getInputStream());
+			// Only upload if a new file exists
+			if (hasNewFile) {
+				newFileUrl = s3Service.uploadFile(bucketName, newS3Key, file.getInputStream());
+			}
 			documentRepository.save(updatedDoc);
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			return "Failed to upload new file to S3";
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update S3");
 		} catch (Exception e) {
-			// Catching database exceptions: Rollback the NEW S3 upload so we don't leave orphans
 			e.printStackTrace();
-			s3Service.deleteFile(bucketName, newS3Key);
-			return "Database update failed, rolled back new s3 upload";
-		}
-
-		// Delete the OLD file from S3 (only happens if new upload and DB update succeed)
-		try {
-			if (oldS3Key != null && !oldS3Key.isEmpty()) {
-				s3Service.deleteFile(bucketName, oldS3Key);
+			// Rollback S3 upload only if we actually uploaded a new one
+			if (hasNewFile && newS3Key != null) {
+				s3Service.deleteFile(bucketName, newS3Key);
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database update failed, rolled back S3 upload");
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Warning: Failed to delete old S3 file: " + oldS3Key);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database update failed");
 		}
 
-		return newFileUrl;
+		// Delete the OLD file from S3 (only if a new file was provided and everything succeeded)
+		if (hasNewFile && oldS3Key != null && !oldS3Key.isEmpty() && !oldS3Key.equals(newS3Key)) {
+			try {
+				s3Service.deleteFile(bucketName, oldS3Key);
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.err.println("Warning: Failed to delete old S3 file: " + oldS3Key);
+			}
+		}
+		return ResponseEntity.ok("Update successful");
 	}
 
 }
