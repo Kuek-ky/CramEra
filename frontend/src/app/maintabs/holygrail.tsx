@@ -4,7 +4,7 @@ import {ActivityIndicator, Platform, Text, View} from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import style from "@/app/global-stylesheet";
 
-const API_BASE = "http://172.18.110.10:8080"; //ip address to come from your wsl container, NOT YOUR LOCAL MACHINE
+const API_BASE = "http://172.18.77.219:8080"; //ip address to come from your wsl container, NOT YOUR LOCAL MACHINE
 
 /*
 * Am testing out some code by making a default landing page

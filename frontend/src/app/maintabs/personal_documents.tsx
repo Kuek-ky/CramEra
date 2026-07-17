@@ -8,6 +8,9 @@ import {
     Pressable,
 } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+
 import style from "@/app/global-stylesheet";
 
 interface Document {
@@ -123,6 +126,17 @@ export default function PersonalScreen(){
 
             />
 
+            <Pressable
+                style={styles.createButton}
+                onPress={() => router.push("/create_document")}
+            >
+                <Ionicons
+                    name="add"
+                    size={34}
+                    color="#4A7AFF"
+                />
+            </Pressable>
+
         </SafeAreaView>
 
     );
@@ -182,6 +196,25 @@ const styles=StyleSheet.create({
 
     type:{
         color:"grey"
-    }
+    },
 
+    createButton: {
+        position: "absolute",
+        right: 25,
+        bottom: 40,
+        width: 70,
+        height: 70,
+        borderRadius: 36,
+        backgroundColor: "white",
+        alignItems: "center",
+        justifyContent: "center",
+        elevation: 10,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 6,
+    },
 });

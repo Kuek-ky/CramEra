@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Pressable, Text, TextInput, View, ActivityIndicator } from "react-native";
 import { Link, router } from "expo-router";
 
-// const API_BASE = "http://172.18.77.219:8080"; //ip address to come from your wsl container, NOT YOUR LOCAL MACHINE
-const API_BASE = "http://172.18.110.10:8080";
+const API_BASE = "http://172.18.77.219:8080";
 
 function sleep(ms: number){
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -47,14 +46,11 @@ export default function Login(){
 
             await sleep(1000);
 
-            if (response.ok){
+            if (response.ok) {
                 const user = await response.json();
-                navigation.navigate("/profile", {
-                    userName: user.userName,
-                    userEmail: user.userEmail,
-                })
-                router.push({
-                    pathname: "/profile",
+
+                router.replace({
+                    pathname: "/maintabs/home",
                     params: {
                         userName: user.userName,
                         userEmail: user.userEmail,
@@ -69,7 +65,7 @@ export default function Login(){
         } catch (error){
             await sleep(1000);
             setStatus("error");
-            setMessage("Cannot reach backend :(");
+            setMessage("Login failed");
         }
     }
 

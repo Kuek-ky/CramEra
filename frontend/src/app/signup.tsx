@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Pressable, Text, TextInput, View, ActivityIndicator } from "react-native";
 import { Link, router } from "expo-router";
 
-// const API_BASE = "http://172.18.77.219:8080"; //ip address to come from your wsl container, NOT YOUR LOCAL MACHINE
-const API_BASE = "http://172.18.110.10:8080";
+const API_BASE = "http://172.18.77.219:8080";
 
 function sleep(ms: number){
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -53,15 +52,14 @@ export default function SignUp(){
             // ^^ to get the whole HTTP response, status code, headers etc...
 
             const result = await response.text();
-            // ^^ actual message, like "Email must contain at least one @" or smt
 
-            if (response.ok){
-                await sleep(1000);
-                router.push({
-                    pathname: "/profile",
+            if (response.ok) {
+                router.replace({
+                    pathname: "/maintabs/home",
                     params: {
                         userName: userName,
                         userEmail: userEmail,
+                        showDocs: "false"
                     },
                 });
             } else {

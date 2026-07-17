@@ -1,5 +1,7 @@
 import { Text, View, StyleSheet, Image, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
+import globalStyles from "@/app/global-stylesheet";
+
 type PublicDocument = {
     documentId: number;
     title: string;
@@ -16,11 +18,12 @@ const documentPlaceholder3 = require("../../assets/images/document-placeholder-3
 
 export default function Profile() {
 
-    const { userName, userEmail } = useLocalSearchParams();
+    const { userName, userEmail, showDocs } = useLocalSearchParams();
     const displayName = userName ?? "Unknown User";
     // ?? -> If username is missing, return back "Unknown User"
     const displayEmail = userEmail ?? "No email found";
     // ?? -> If userEmail is missing, return back "No email found"
+    const doesPrevPageShowDocs = showDocs === "true";
 
     const publicDocuments: PublicDocument[] = [
         {
@@ -51,10 +54,7 @@ export default function Profile() {
 
     const styles = StyleSheet.create({
         container: {
-            flex: 1,
             alignItems: "center",
-            padding: 24,
-            backgroundColor: "#F4F7FB",
         },
         pageTitle: {
             fontSize: 28,
@@ -100,7 +100,6 @@ export default function Profile() {
             flexDirection: "row",
             alignItems: "center",
             backgroundColor: "white",
-            borderWidth: 2,
         },
         documentImage: {
             width: 70,
@@ -130,7 +129,12 @@ export default function Profile() {
     });
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView
+            contentContainerStyle={[
+                globalStyles.container,
+                styles.container,
+            ]}
+        >
             <Text style={styles.pageTitle}>
                 Profile Page
             </Text>
@@ -147,24 +151,32 @@ export default function Profile() {
             <View style={styles.documentsSection}>
                 <Text style={styles.sectionTitle}>Public Documents</Text>
 
-                {publicDocuments.map((document) => (
-                    <View key={document.documentId} style={styles.documentCard}>
-                        <Image
-                            source={document.image}
-                            style={styles.documentImage}
-                        />
+                {doesPrevPageShowDocs ? (
+                    publicDocuments.map((document) => (
+                        <View key={document.documentId} style={styles.documentCard}>
+                            <Image
+                                source={document.image}
+                                style={styles.documentImage}
+                            />
 
-                        <View style={styles.documentInfo}>
-                            <Text style={styles.documentTitle}>{document.title}</Text>
-                            <Text style={styles.documentDescription}>
-                                {document.description}
-                            </Text>
-                            <Text style={styles.documentExtraDetails}>
-                                {document.fileType} · {document.createdAt}
-                            </Text>
+                            <View style={styles.documentInfo}>
+                                <Text style={styles.documentTitle}>
+                                    {document.title}
+                                </Text>
+
+                                <Text style={styles.documentDescription}>
+                                    {document.description}
+                                </Text>
+
+                                <Text style={styles.documentExtraDetails}>
+                                    {document.fileType} · {document.createdAt}
+                                </Text>
+                            </View>
                         </View>
-                    </View>
-                ))}
+                    ))
+                ) : (
+                    <Text> No documents uploaded yet. </Text>
+                )}
             </View>
 
         </ScrollView>
