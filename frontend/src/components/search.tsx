@@ -3,7 +3,7 @@ import {FlatList,} from "react-native";
 
 import Screen from "@/components/common/screen";
 import Header from "@/components/common/header";
-import SearchBar from "@/components/search";
+import SearchBar from "@/components/searchBar";
 import DocumentCard from "@/components/document/DocumentCard";
 
 interface Document {
