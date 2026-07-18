@@ -7,9 +7,14 @@ import {
     View,
     Pressable,
 } from "react-native";
-import Screen from "@/components/common/Screen";
-import { Ionicons } from "@expo/vector-icons";
+import Screen from "@/components/common/screen";
+// import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import {Colors} from "@/theme/colors";
+import Header from "@/components/common/header";
+import {SearchBar} from "react-native-screens";
+import Card from "@/components/common/card";
+import DocumentCard from "@/components/document/DocumentCard";
 
 
 
@@ -119,11 +124,11 @@ export default function PersonalScreen() {
                 style={styles.createButton}
                 onPress={() => router.push("/create_document")}
             >
-                <Ionicons
-                    name="add"
-                    size={34}
-                    color="#4A7AFF"
-                />
+                {/*<Ionicons*/}
+                {/*    name="add"*/}
+                {/*    size={34}*/}
+                {/*    color="#4A7AFF"*/}
+                {/*/>*/}
             </Pressable>
 
         </Screen>

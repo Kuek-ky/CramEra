@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
-import { Typography, Spacing } from "@/theme/Index";
+import { Typography} from "@/theme/typography";
+import { Spacing} from "@/theme/spacing";
 
 interface HeaderProps {
     title: string;

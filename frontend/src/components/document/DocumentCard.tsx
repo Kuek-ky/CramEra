@@ -1,15 +1,14 @@
 import { Text, StyleSheet, Pressable } from "react-native";
 import { Document } from "@/types/document";
 
-import Card from "@/components/common/Card";
+import Card from "@/components/common/card";
 
-import {
-    Colors,
-    Radius,
-    Shadows,
-    Spacing,
-    Typography,
-} from "@/theme/Index";
+import {Colors} from "@/theme/colors"
+import {Radius} from "@/theme/radius"
+import {Shadows} from "@/theme/shadow"
+import {Sizes} from "@/theme/sizes"
+import {Spacing} from "@/theme/spacing"
+import {Typography} from "@/theme/typography"
 
 interface Props {
 

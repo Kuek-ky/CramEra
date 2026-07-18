@@ -1,10 +1,10 @@
 import { StyleSheet } from "react-native";
-import {
-    Colors,
-    Radius,
-    Shadows,
-    Spacing,
-} from "@/theme/Index";
+import {Colors} from "@/theme/colors"
+import {Radius} from "@/theme/radius"
+import {Shadows} from "@/theme/shadow"
+import {Sizes} from "@/theme/sizes"
+import {Spacing} from "@/theme/spacing"
+import {Typography} from "@/theme/typography"
 
 export default StyleSheet.create({
 

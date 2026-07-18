@@ -1,22 +1,18 @@
 import { Image, Pressable, View, StyleSheet, Text } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 
-import Screen from "@/components/common/Screen";
-import Header from "@/components/common/Header";
-import Card from "@/components/common/Card";
+import Screen from "@/components/common/screen";
+import Header from "@/components/common/header";
+import Card from "@/components/common/card";
+import {Typography} from "@/theme/typography";
+
 import SectionTitle from "@/components/common/SectionTitle";
-import SearchBar from "@/components/common/SearchBar";
+import SearchBar from "@/components/search";
 import DocumentCard from "@/components/document/DocumentCard";
-
-import {
-    Colors,
-    Spacing,
-    Radius,
-    Typography,
-} from "@/theme/Index";
-
 import { useState } from "react";
+import {Spacing} from "@/theme/spacing";
+import {Radius} from "@/theme/radius";
+import {Colors} from "@/theme/colors";
 
 const profilePic = require("../../../assets/images/profile-placeholder.png");
 
@@ -35,11 +31,11 @@ export default function HomeScreen() {
                 rightComponent={
                     <View style={styles.icons}>
                         <Pressable style={styles.notificationButton}>
-                            <Ionicons
-                                name="notifications-outline"
-                                size={24}
-                                color={Colors.text}
-                            />
+                            {/*<Ionicons*/}
+                            {/*    name="notifications-outline"*/}
+                            {/*    size={24}*/}
+                            {/*    color={Colors.text}*/}
+                            {/*/>*/}
                         </Pressable>
 
                         <Pressable

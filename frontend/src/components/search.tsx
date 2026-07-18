@@ -1,12 +1,9 @@
-import { useMemo, useState, useEffect } from "react";
-import {
-    FlatList,
-    View,
-} from "react-native";
+import {useEffect, useState} from "react";
+import {FlatList,} from "react-native";
 
-import Screen from "@/components/common/Screen";
-import Header from "@/components/common/Header";
-import SearchBar from "@/components/common/SearchBar";
+import Screen from "@/components/common/screen";
+import Header from "@/components/common/header";
+import SearchBar from "@/components/search";
 import DocumentCard from "@/components/document/DocumentCard";
 
 interface Document {
