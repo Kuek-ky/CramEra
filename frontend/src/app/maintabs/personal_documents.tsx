@@ -2,21 +2,16 @@ import { useMemo, useState } from "react";
 import {
     StyleSheet,
     Text,
-    TextInput,
     FlatList,
-    View,
     Pressable,
 } from "react-native";
-import Screen from "@/components/common/screen";
-// import { Ionicons } from "@expo/vector-icons";
+import Screen from "@/components/common/Screen";
 import { router } from "expo-router";
-import {Colors} from "@/theme/colors";
-import Header from "@/components/common/header";
-import {SearchBar} from "react-native-screens";
-import Card from "@/components/common/card";
+import { Colors } from "@/theme/Index";
+import Header from "@/components/common/Header";
+import SearchBar from "@/components/searchBar";
+import Card from "@/components/common/Card";
 import DocumentCard from "@/components/document/DocumentCard";
-
-
 
 interface Document {
     id: number;
@@ -124,11 +119,7 @@ export default function PersonalScreen() {
                 style={styles.createButton}
                 onPress={() => router.push("/create_document")}
             >
-                {/*<Ionicons*/}
-                {/*    name="add"*/}
-                {/*    size={34}*/}
-                {/*    color="#4A7AFF"*/}
-                {/*/>*/}
+                <Text style={styles.plus}>+</Text>
             </Pressable>
 
         </Screen>
@@ -139,24 +130,12 @@ export default function PersonalScreen() {
 
 const styles = StyleSheet.create({
 
-    header: {
-        fontSize: 30,
-        fontWeight: "bold",
-        marginBottom: 20
-    },
-
-    search: {
-        backgroundColor: Colors.surface,
-        borderRadius: 30,
-        padding: 15,
-        marginBottom: 20
-    },
-
     folder: {
         backgroundColor: "#DDEBFF",
         padding: 18,
         borderRadius: 15,
-        marginBottom: 20
+        marginBottom: 20,
+        marginTop: 20
     },
 
     folderTitle: {
@@ -169,33 +148,10 @@ const styles = StyleSheet.create({
         color: "grey"
     },
 
-    card: {
-        backgroundColor: Colors.surface,
-        padding: 18,
-        borderRadius: 15,
-        marginBottom: 15,
-        elevation: 3
-    },
-
-    module: {
-        color: Colors.primary,
-        fontWeight: "600"
-    },
-
-    title: {
-        fontWeight: "bold",
-        fontSize: 20,
-        marginVertical: 5
-    },
-
-    type: {
-        color: "grey"
-    },
-
     createButton: {
         position: "absolute",
         right: 25,
-        bottom: 40,
+        bottom: 100,
         width: 70,
         height: 70,
         borderRadius: 36,
@@ -210,5 +166,12 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 6,
+    },
+
+    plus: {
+        fontSize: 40,
+        lineHeight: 42,
+        color: Colors.primary,
+        fontWeight: "300",
     },
 });

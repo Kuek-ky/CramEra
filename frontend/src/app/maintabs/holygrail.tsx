@@ -1,20 +1,16 @@
 import {useState} from "react";
 import {Text, View} from "react-native";
 import SearchScreen from "@/components/search"
+import Screen from "@/components/common/Screen";
+import Header from "@/components/common/Header";
 
-import Screen from "@/components/common/screen";
-import Header from "@/components/common/header";
+import {
+    Colors,
+    Radius,
+} from "@/theme/Index";
 
-// import {
-//     Colors,
-//     Radius,
-//     Spacing,
-//     Typography,
-// } from "@/theme";
-import {Colors} from "@/theme/colors"
-import {Radius} from "@/theme/radius"
 
-const API_BASE = "http://172.18.77.219:8080"; //ip address to come from your wsl container, NOT YOUR LOCAL MACHINE
+const API_BASE = "http://172.18.77.219:8080";
 
 /*
 * Am testing out some code by making a default landing page

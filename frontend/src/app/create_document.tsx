@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 
-const API_BASE = "http://192.168.1.119:8080";
+const API_BASE = "http://172.18.77.219:8080";
 export default function CreateDocument() {
 
     // ===== State =====

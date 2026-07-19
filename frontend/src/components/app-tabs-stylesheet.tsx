@@ -1,10 +1,10 @@
 import { StyleSheet } from "react-native";
-import {Colors} from "@/theme/colors"
-import {Radius} from "@/theme/radius"
-import {Shadows} from "@/theme/shadow"
-import {Sizes} from "@/theme/sizes"
-import {Spacing} from "@/theme/spacing"
-import {Typography} from "@/theme/typography"
+import {
+    Colors,
+    Radius,
+    Shadows,
+    Spacing,
+} from "@/theme/Index";
 
 export default StyleSheet.create({
 
@@ -15,13 +15,17 @@ export default StyleSheet.create({
         right: Spacing.lg,
         bottom: Spacing.lg,
 
-        height: 72,
+        height: 77,
 
         borderRadius: Radius.lg,
 
         backgroundColor: Colors.surface,
 
         borderTopWidth: 0,
+
+        paddingTop: 10,
+        paddingBottom: 4,
+        paddingHorizontal: 6,
 
         ...Shadows.floating,
     },
@@ -34,8 +38,8 @@ export default StyleSheet.create({
 
     floatingTabBtnContainer: {
 
-        width: 64,
-        height: 64,
+        width: 60,
+        height: 60,
 
         borderRadius: Radius.pill,
 

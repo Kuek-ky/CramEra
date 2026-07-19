@@ -1,8 +1,6 @@
 import {useEffect, useState} from "react";
-import {FlatList,} from "react-native";
-
-import Screen from "@/components/common/screen";
-import Header from "@/components/common/header";
+import {FlatList, View} from "react-native";
+import Header from "@/components/common/Header";
 import SearchBar from "@/components/searchBar";
 import DocumentCard from "@/components/document/DocumentCard";
 
@@ -34,17 +32,19 @@ export default function SearchScreen() {
     }, [search]);
 
     return (
-        <Screen>
+        <View style={{ marginTop: 10 }}>
 
             <Header
                 title="Search"
                 subtitle="Find study materials"
             />
 
-            <SearchBar
-                value={search}
-                onChange={setSearch}
-            />
+            <View style={{ marginTop: -30 }}>
+                <SearchBar
+                    value={search}
+                    onChange={setSearch}
+                />
+            </View>
 
             <FlatList
                 data={documents}
@@ -65,6 +65,6 @@ export default function SearchScreen() {
                 )}
             />
 
-        </Screen>
+        </View>
     );
 }

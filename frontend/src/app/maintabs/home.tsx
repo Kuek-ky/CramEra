@@ -1,26 +1,24 @@
 import { Image, Pressable, View, StyleSheet, Text } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
-import Screen from "@/components/common/screen";
-import Header from "@/components/common/header";
-import Card from "@/components/common/card";
-import {Typography} from "@/theme/typography";
+import Screen from "@/components/common/Screen";
+import Header from "@/components/common/Header";
+import Card from "@/components/common/Card";
+import SearchScreen from "@/components/search";
 
-import SectionTitle from "@/components/common/SectionTitle";
-import SearchBar from "@/components/search";
-import DocumentCard from "@/components/document/DocumentCard";
-import { useState } from "react";
-import {Spacing} from "@/theme/spacing";
-import {Radius} from "@/theme/radius";
-import {Colors} from "@/theme/colors";
+import {
+    Colors,
+    Spacing,
+    Radius,
+    Typography,
+} from "@/theme/Index";
+
 
 const profilePic = require("../../../assets/images/profile-placeholder.png");
+const notificationBell = require("../../../assets/images/notification-icon.png");
 
 export default function HomeScreen() {
     const { userName, userEmail } = useLocalSearchParams();
-
-    const [search, setSearch] = useState("");
-
 
     return (
         <Screen>
@@ -31,11 +29,10 @@ export default function HomeScreen() {
                 rightComponent={
                     <View style={styles.icons}>
                         <Pressable style={styles.notificationButton}>
-                            {/*<Ionicons*/}
-                            {/*    name="notifications-outline"*/}
-                            {/*    size={24}*/}
-                            {/*    color={Colors.text}*/}
-                            {/*/>*/}
+                            <Image
+                                source={notificationBell}
+                                style={styles.notification}
+                            />
                         </Pressable>
 
                         <Pressable
@@ -58,16 +55,10 @@ export default function HomeScreen() {
                     </View>
                 }
             />
-
-            <SearchBar
-                value={search}
-                onChange={setSearch}
-            />
-
             <Card
                 style={{
                     backgroundColor: Colors.primaryLight,
-                    marginTop: Spacing.lg,
+                    marginTop: Spacing.sm,
                 }}
             >
                 <Text style={Typography.h3}>
@@ -85,6 +76,9 @@ export default function HomeScreen() {
                     Discover, organise and share study materials with your classmates.
                 </Text>
             </Card>
+            <SearchScreen />
+
+
 
             <View
                 style={{
@@ -134,116 +128,10 @@ const styles = StyleSheet.create({
         borderRadius: Radius.pill,
     },
 
+    notification: {
+        width: 26,
+        height: 26,
+        resizeMode: "contain",
+    },
+
 });
-
-/*
-ORI CODE
-import { Text, Image, Pressable, View, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { router, useLocalSearchParams } from "expo-router";
-
-import Screen from "@/components/common/screen";
-
-const profilePic = require("../../../assets/images/profile-placeholder.png");
-
-export default function HomeScreen() {
-    const { userName, userEmail } = useLocalSearchParams();
-
-    return (
-        <Screen>
-            <View style={styles.topSection}>
-                <Text style={styles.header}>Explore</Text>
-
-                <View style={styles.icons}>
-                    <Pressable style={styles.notificationButton}>
-                        <Ionicons
-                            name="notifications-outline"
-                            size={26}
-                            color="black"
-                        />
-                    </Pressable>
-
-                    <Pressable
-                        onPress={() =>
-                            router.push({
-                                pathname: "/profile",
-                                params: {
-                                    userName: userName ?? "",
-                                    userEmail: userEmail ?? "",
-                                    showDocs: "true",
-                                },
-                            })
-                        }
-                    >
-                        <Image
-                            source={profilePic}
-                            style={styles.profileImage}
-                        />
-                    </Pressable>
-                </View>
-            </View>
-
-            <View style={styles.MOTDCard}>
-                <Text style={styles.message}>
-                    Let&apos;s make today productive!
-                </Text>
-
-                <Text style={styles.subtitle}>
-                    Discover and share study materials with us.
-                </Text>
-            </View>
-        </Screen>
-    );
-}
-
-const styles = StyleSheet.create({
-    topSection: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 20,
-    },
-
-    icons: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 9,
-    },
-
-    header: {
-        fontSize: 25,
-        fontWeight: "bold",
-    },
-
-    MOTDCard: {
-        backgroundColor: "#DDEBFF",
-        padding: 18,
-        borderRadius: 15,
-        marginBottom: 20,
-    },
-
-    message: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginBottom: 10,
-    },
-
-    subtitle: {
-        marginTop: 5,
-        color: "grey",
-    },
-
-    notificationButton: {
-        width: 42,
-        height: 42,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-
-    profileImage: {
-        width: 52,
-        height: 52,
-        borderRadius: 26,
-    },
-});
-*/

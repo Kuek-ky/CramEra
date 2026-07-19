@@ -1,7 +1,7 @@
 import {Tabs} from "expo-router";
 import {Image, Text, View} from "react-native";
 
-import {Colors} from "@/theme/colors";
+import {Colors} from "@/theme/Colors";
 import style from "./app-tabs-stylesheet";
 
 interface TabIconProps {

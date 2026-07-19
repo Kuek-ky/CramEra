@@ -1,14 +1,13 @@
 import { Text, StyleSheet, Pressable } from "react-native";
 import { Document } from "@/types/document";
 
-import Card from "@/components/common/card";
+import Card from "@/components/common/Card";
 
-import {Colors} from "@/theme/colors"
-import {Radius} from "@/theme/radius"
-import {Shadows} from "@/theme/shadow"
-import {Sizes} from "@/theme/sizes"
-import {Spacing} from "@/theme/spacing"
-import {Typography} from "@/theme/typography"
+import {
+    Colors,
+    Spacing,
+    Typography
+} from "@/theme/Index";
 
 interface Props {
 
@@ -17,12 +16,9 @@ interface Props {
 }
 
 export default function DocumentCard({ document }: Props) {
-
     return (
         <Pressable>
-
-            <Card>
-
+            <Card style={styles.card}>
                 <Text style={Typography.caption}>
                     {document.module}
                 </Text>
@@ -46,17 +42,22 @@ export default function DocumentCard({ document }: Props) {
                     {document.description}
                 </Text>
 
-                <Text style={styles.author}>
-                    {document.author}
-                </Text>
-
+                {document.author !== "" && (
+                    <Text style={styles.author}>
+                        {document.author}
+                    </Text>
+                )}
             </Card>
-
         </Pressable>
     );
 }
 
 const styles = StyleSheet.create({
+    card: {
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        marginBottom: 12
+    },
 
     author: {
         marginTop: Spacing.sm,

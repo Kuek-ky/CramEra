@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Pressable, Text, TextInput, View, ActivityIndicator } from "react-native";
 import { Link, router } from "expo-router";
 
-const API_BASE = "http:/172.18.110.10:8080";
+const API_BASE = "http://172.18.77.219:8080";
 
 function sleep(ms: number){
     return new Promise((resolve) => setTimeout(resolve, ms));
