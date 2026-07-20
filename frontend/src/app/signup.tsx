@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, router } from "expo-router";
+import {storeUserData, userStorage} from "@/api/asyncStoreUser";
 
 import {
     ActivityIndicator,
@@ -19,7 +20,7 @@ import {
     Typography,
 } from "@/theme/Index";
 
-const API_BASE = "http://172.18.77.219:8080";
+const API_BASE = process.env.EXPO_PUBLIC_API_URL;
 
 function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -68,18 +69,19 @@ export default function SignUp() {
             });
             // ^^ to get the whole HTTP response, status code, headers etc...
 
-            const result = await response.text();
-
             if (response.ok) {
+                const user = await response.json();
+                await storeUserData(user.userId, user.userName, user.userEmail);
+
                 router.replace({
                     pathname: "/maintabs/home",
                     params: {
-                        userName: userName,
-                        userEmail: userEmail,
                         showDocs: "false"
-                    },
-                });
+                    }})
+
             } else {
+                const result = await response.text();
+
                 setStatus("error");
                 setMessage(result);
             }

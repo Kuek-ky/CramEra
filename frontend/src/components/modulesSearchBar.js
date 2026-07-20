@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { Dropdown } from 'react-native-element-dropdown';
+import {Colors, Radius, Spacing, Typography} from "@/theme/Index";
 
-const SearchModules = ({ initialId, initialName, onSelectModule }) => {
+const SearchModules = ({ initialId, initialCodeName, onSelectModule }) => {
     const [modules, setModules] = useState([]);
     const [currentModID, setCurrentModID] = useState(initialId);
-    const [currentModName, setCurrentModName] = useState(initialName);
+    const [currentModName, setCurrentModName] = useState(initialCodeName);
     const [isFocus, setIsFocus] = useState(false);
 
     useEffect(() => {
-        if (initialId && initialName) {
+        if (initialId && initialCodeName) {
             setCurrentModID(initialId);
-            setCurrentModName(initialName);
-            setModules([{ id: initialId, moduleName: initialName }]);
+            setCurrentModName(initialCodeName);
+            setModules([{ id: initialId, moduleName: initialCodeName }]);
         }
-
-        console.log("setCurrentModID:", initialId);
-        console.log("setCurrentModName:", initialName);
-
-    }, [initialId, initialName]);
+    }, [initialId, initialCodeName]);
 
     const searchData = (searchText) => {
         if (!searchText) {
@@ -33,7 +30,14 @@ const SearchModules = ({ initialId, initialName, onSelectModule }) => {
         fetch(`http://172.18.110.10:8080/api/search/module?name=${searchText}`)
             .then(res => res.json())
             .then((mods) => {
-                setModules(mods);
+                setModules(mods.map((m) => {
+                        return {
+                            id: m.id,
+                            moduleName: `[${m.moduleCode}] ${m.moduleName}`
+                        }
+                    }
+
+                ));
             })
             .catch((error) => {
                 console.error("Error fetching modules:", error);
@@ -41,10 +45,10 @@ const SearchModules = ({ initialId, initialName, onSelectModule }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Module Name</Text>
+        <View >
+            <Text style={styles.label}>Module Name</Text>
             <Dropdown
-                style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+                style={[styles.input]}
                 data={modules}
                 search
                 searchPlaceholder="Search for modules..."
@@ -56,7 +60,6 @@ const SearchModules = ({ initialId, initialName, onSelectModule }) => {
                 onBlur={() => setIsFocus(false)}
                 onChangeText={(searchQuery) => searchData(searchQuery)}
                 onChange={(item) => {
-                    console.log("item->", item);
                     setCurrentModID(item.id);
                     setCurrentModName(item.moduleName);
                     setIsFocus(false);
@@ -64,28 +67,29 @@ const SearchModules = ({ initialId, initialName, onSelectModule }) => {
                         onSelectModule(item);
                     }
                 }}
+                searchPlaceholderTextColor={Colors.text}
             />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        justifyContent: 'center',
+    label: {
+        ...Typography.body,
+        fontWeight: "600",
+        marginTop: Spacing.lg,
+        marginBottom: Spacing.xs,
+        color: Colors.text,
     },
-    title: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    dropdown: {
+    input: {
         height: 50,
-        borderColor: 'gray',
-        borderWidth: 0.5,
-        borderRadius: 8,
-        paddingHorizontal: 8,
+        backgroundColor: Colors.surface,
+        borderWidth: 1,
+        borderColor: Colors.border,
+        borderRadius: Radius.md,
+        paddingHorizontal: Spacing.md,
+        paddingVertical: Spacing.md,
+        ...Typography.body,
     },
 });
 

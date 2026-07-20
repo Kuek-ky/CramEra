@@ -6,12 +6,13 @@ import {
     Pressable,
 } from "react-native";
 import Screen from "@/components/common/Screen";
-import { router } from "expo-router";
+import {router, useLocalSearchParams} from "expo-router";
 import { Colors } from "@/theme/Index";
 import Header from "@/components/common/Header";
 import SearchBar from "@/components/searchBar";
 import Card from "@/components/common/Card";
 import DocumentCard from "@/components/document/DocumentCard";
+import {getStoredUserId} from "@/api/asyncStoreUser";
 
 interface Document {
     id: number;
@@ -117,7 +118,9 @@ export default function PersonalScreen() {
 
             <Pressable
                 style={styles.createButton}
-                onPress={() => router.push("/create_document")}
+                onPress={() => {
+                    router.push("/create_document")
+                }}
             >
                 <Text style={styles.plus}>+</Text>
             </Pressable>

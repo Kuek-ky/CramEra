@@ -19,8 +19,10 @@ import {
     Radius,
     Typography,
 } from "@/theme/Index";
+import {storeUserData, userStorage} from "@/api/asyncStoreUser";
 
-const API_BASE = "http://172.18.77.219:8080";
+const API_BASE = process.env.EXPO_PUBLIC_API_URL;
+console.log(API_BASE)
 
 function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -66,14 +68,11 @@ export default function Login() {
 
             if (response.ok) {
                 const user = await response.json();
+                await storeUserData(user.userId, user.userName, user.userEmail);
 
                 router.replace({
-                    pathname: "/maintabs/home",
-                    params: {
-                        userName: user.userName,
-                        userEmail: user.userEmail,
-                    },
-                });
+                    pathname: "/maintabs/home"
+                })
             } else {
                 const result = await response.text();
 

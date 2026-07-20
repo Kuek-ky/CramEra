@@ -13,16 +13,12 @@ import {
     Typography,
 } from "@/theme/Index";
 
-
 const profilePic = require("../../../assets/images/profile-placeholder.png");
 const notificationBell = require("../../../assets/images/notification-icon.png");
 
 export default function HomeScreen() {
-    const { userName, userEmail } = useLocalSearchParams();
-
     return (
         <Screen>
-
             <Header
                 title="Explore"
                 subtitle="Welcome back"
@@ -40,8 +36,6 @@ export default function HomeScreen() {
                                 router.push({
                                     pathname: "/profile",
                                     params: {
-                                        userName: userName ?? "",
-                                        userEmail: userEmail ?? "",
                                         showDocs: "true",
                                     },
                                 })

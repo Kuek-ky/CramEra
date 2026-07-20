@@ -21,14 +21,12 @@ public class UserController {
 
     // to create user, use @PostMapping instead of @GetMapping, latter is more for giving information
     @PostMapping("/api/users")
-    public String receiveRequest(@RequestBody UserCreation userCreation){
+    public LoginResponse receiveRequest(@RequestBody UserCreation userCreation){
         return userService.createUser(userCreation);
     }
 
     @PostMapping("/api/login")
     public LoginResponse login(@RequestBody UserLogin userLogin){
-        System.out.println(userLogin.getUserName());
-        System.out.println(userLogin.getUserPassword());
         return userService.loginUser(userLogin);
     }
 }

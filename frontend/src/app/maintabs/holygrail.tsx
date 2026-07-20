@@ -9,8 +9,7 @@ import {
     Radius,
 } from "@/theme/Index";
 
-
-const API_BASE = "http://172.18.77.219:8080";
+const API_BASE = process.env.EXPO_PUBLIC_API_URL;
 
 /*
 * Am testing out some code by making a default landing page

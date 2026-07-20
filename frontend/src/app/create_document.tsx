@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
@@ -8,6 +8,8 @@ import {
     Alert,
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
+import SearchModules from '../components/modulesSearchBar';
+import {getStoredUserId} from "@/api/asyncStoreUser";
 
 import Screen from "@/components/common/Screen";
 import Header from "@/components/common/Header";
@@ -18,23 +20,20 @@ import {
     Spacing,
     Typography,
 } from "@/theme/Index";
+import {router} from "expo-router";
 
-const API_BASE = "http://172.18.77.219:8080";
+const API_BASE = process.env.EXPO_PUBLIC_API_URL;
 export default function CreateDocument() {
 
     // ===== State =====
+    const [moduleID, setModuleID] = useState(0);
+    const [moduleName, setModuleName] = useState('');
     const [selectedFile, setSelectedFile] = useState<any>(null);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [visibility, setVisibility] = useState("public");
 
     // ===== Buttons =====
-
-    // only for testin
-    // const chooseFile = () => {
-    //     // We'll replace this with the real document picker later
-    //     setSelectedFile("lecture5.pdf");
-    // };
 
     const chooseFile = async () => {
 
@@ -64,52 +63,51 @@ export default function CreateDocument() {
             alert("No title");
             return;
         }
+        const userId = await getStoredUserId();
 
         const document = {
-            ownerUserID: 1,
-            title,
-            description,
-            visibility,
-            module: {
-                id: 1
-            }
-        };
+            "ownerUserID": parseInt(userId || "1", 10),
+            "module": {"id":moduleID},
+            "title": title,
+            "description": description,
+            "visibility": visibility
+        }
 
         const formData = new FormData();
 
-        formData.append(
-            "file",
-            selectedFile.file,
-            selectedFile.name
-        );
+        formData.append("file", {
+            uri: selectedFile.uri,
+            name: selectedFile.name,
+            type: selectedFile.mimeType
+        } as any);
 
         formData.append(
-            "document",
-            new Blob(
-                [JSON.stringify(document)],
-                {
-                    type: "application/json"
-                }
-            )
+            "document", JSON.stringify(document)
         );
 
-        console.log(selectedFile.file);
-        console.log(formData.get("file"));
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', `${API_BASE}/file/upload`);
 
-        const response = await fetch(`${API_BASE}/file/upload`, {
-            method: "POST",
-            body: formData,
-        });
+        xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                console.log("Upload success:", xhr.responseText);
+                Alert.alert("Success", "Document uploaded successfully!");
+                router.replace({
+                    pathname: "/maintabs/home"
+                })
+            } else {
+                console.error(`Backend error (${xhr.status}):`, xhr.responseText);
+                Alert.alert("Upload Failed", `Server Error: ${xhr.responseText}`);
+            }
+        };
 
-        const text = await response.text();
+        xhr.onerror = () => {
+            console.error("Network request failed");
+            Alert.alert("Network Error", "Could not connect to the server. Please check your connection.");
+        };
 
-        console.log(text);
+        xhr.send(formData);
 
-        Alert.alert(text);
-
-        console.log(selectedFile.file.name);
-        console.log(selectedFile.file.size);
-        console.log(selectedFile.file.type);
 
     };
 
@@ -151,6 +149,18 @@ export default function CreateDocument() {
                 value={title}
                 onChangeText={setTitle}
             />
+
+            {/* Module Select */}
+            <View style={{ marginBottom: 15 }}>
+                <SearchModules
+                    initialId={moduleID}
+                    initialCodeName={moduleName}
+                    onSelectModule={(selectedItem) => {
+                        setModuleName(selectedItem.moduleName);
+                        setModuleID(selectedItem.id);
+                    }}
+                />
+            </View>
 
             {/* Description */}
 
@@ -215,20 +225,6 @@ export default function CreateDocument() {
             </View>
 
             {/* Upload */}
-
-            {/*<Pressable*/}
-            {/*    style={{*/}
-            {/*        backgroundColor: "red",*/}
-            {/*        padding: 20,*/}
-            {/*        marginTop: 20,*/}
-            {/*    }}*/}
-            {/*    onPress={uploadDocument}*/}
-            {/*>*/}
-            {/*    <Text style={{ color: "white" }}>*/}
-            {/*        Upload*/}
-            {/*    </Text>*/}
-            {/*</Pressable>*/}
-
             <Pressable
                 style={styles.uploadButton}
                 onPress={uploadDocument}

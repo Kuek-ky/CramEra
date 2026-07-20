@@ -10,6 +10,8 @@ import {
     Spacing,
     Typography,
 } from "@/theme/Index";
+import {useEffect, useState} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type PublicDocument = {
     documentId: number;
@@ -26,12 +28,30 @@ const documentPlaceholder2 = require("../../assets/images/document-placeholder-2
 const documentPlaceholder3 = require("../../assets/images/document-placeholder-3.png");
 
 export default function Profile() {
+    const [displayName, setDisplayName] = useState('');
+    const [displayEmail, setDisplayEmail] = useState('');
+    useEffect(() => {
+        const getMultiple = async () => {
+            try {
+                // 1. Use multiGet with an array of keys
+                const keyValuePairs = await AsyncStorage.multiGet(["userName", "userEmail"]);
+                const data = Object.fromEntries(keyValuePairs);
 
-    const { userName, userEmail, showDocs } = useLocalSearchParams();
-    const displayName = userName ?? "Unknown User";
-    // ?? -> If username is missing, return back "Unknown User"
-    const displayEmail = userEmail ?? "No email found";
-    // ?? -> If userEmail is missing, return back "No email found"
+                console.log(data);
+
+                setDisplayName(data.userName ?? "Unknown User");
+                // ?? -> If username is missing, return back "Unknown User"
+                setDisplayEmail(data.userEmail ?? "No email found");
+                // ?? -> If userEmail is missing, return back "No email found"
+
+            } catch (error) {
+                console.log("Error fetching user data:", error);
+            }
+        };
+        getMultiple();
+    }, []);
+
+    const { showDocs } = useLocalSearchParams();
     const doesPrevPageShowDocs = showDocs === "true";
 
     const publicDocuments: PublicDocument[] = [

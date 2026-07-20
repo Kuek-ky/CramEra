@@ -53,16 +53,22 @@ export default function SearchScreen() {
                     paddingTop: 16,
                     paddingBottom: 120,
                 }}
-                renderItem={({ item }) => (
-                    <DocumentCard
-                        document={{
-                            module: item.module.moduleCode,
-                            title: item.title,
-                            description: item.description,
-                            author: item.author,
-                        }}
-                    />
-                )}
+                renderItem={({ item }) => {
+                    let moduleCode = "";
+                    if (item.module != null){
+                        moduleCode = item.module.moduleCode
+                    }
+                    return (
+                        <DocumentCard
+                            document={{
+                                module: moduleCode || "",
+                                title: item.title,
+                                description: item.description,
+                                author: item.author,
+                            }}
+                        />
+                    )
+                }}
             />
 
         </View>
