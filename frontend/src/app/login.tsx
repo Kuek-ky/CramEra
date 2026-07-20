@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
 
     error: {
         marginTop: Spacing.md,
-        color: Colors.error,
+        color: Colors.danger,
         ...Typography.bodySmall,
     },
 
