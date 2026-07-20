@@ -1,5 +1,8 @@
 package com.cram_era.backend.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+
 import com.cram_era.backend.entities.UserCreation;
 import com.cram_era.backend.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,12 +24,28 @@ public class UserController {
 
     // to create user, use @PostMapping instead of @GetMapping, latter is more for giving information
     @PostMapping("/api/users")
-    public String receiveRequest(@RequestBody UserCreation userCreation){
-        return userService.createUser(userCreation);
+    public ResponseEntity<String> receiveRequest(@RequestBody UserCreation userCreation) {
+        try {
+            String result = userService.createUser(userCreation);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/api/login")
-    public LoginResponse login(@RequestBody UserLogin userLogin){
-        return userService.loginUser(userLogin);
+//    public LoginResponse login(@RequestBody UserLogin userLogin){
+//
+//        return userService.loginUser(userLogin);
+//    }
+    public ResponseEntity<?> login(@RequestBody UserLogin userLogin) {
+        try {
+            LoginResponse response = userService.loginUser(userLogin);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(e.getMessage());
+        }
     }
+
 }

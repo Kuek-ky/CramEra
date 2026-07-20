@@ -1,5 +1,6 @@
 package com.cram_era.backend.controller;
 
+import org.springframework.http.ResponseEntity;
 import com.cram_era.backend.entities.Module;
 import com.cram_era.backend.service.ModuleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,14 @@ public class ModuleController {
 	}
 
 	@GetMapping(path="getModule/{id}")
-	public Module getModuleById(@PathVariable("id") int id) {
-		return moduleService.getModuleById(id);
+//	public Module getModuleById(@PathVariable("id") int id) {
+//		return moduleService.getModuleById(id);
+//	}
+	public ResponseEntity<Module> getModuleById(@PathVariable int id) {
+		Module module = moduleService.getModuleById(id);
+		return ResponseEntity.ok(module);
 	}
+
 }
+
+
