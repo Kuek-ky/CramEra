@@ -9,6 +9,16 @@ import {
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 
+import Screen from "@/components/common/Screen";
+import Header from "@/components/common/Header";
+
+import {
+    Colors,
+    Radius,
+    Spacing,
+    Typography,
+} from "@/theme/Index";
+
 const API_BASE = "http://172.18.77.219:8080";
 export default function CreateDocument() {
 
@@ -105,11 +115,12 @@ export default function CreateDocument() {
 
 
     return (
-        <View style={styles.container}>
+        <Screen>
 
-            <Text style={styles.heading}>
-                Create Document
-            </Text>
+            <Header
+                title="Create Document"
+                subtitle="Upload and share your study materials"
+            />
 
             {/* Choose File */}
 
@@ -123,7 +134,9 @@ export default function CreateDocument() {
             </Pressable>
 
             <Text style={styles.fileText}>
-                {selectedFile ? selectedFile.name : "No file selected"}
+                {selectedFile
+                    ? `Selected: ${selectedFile.name}`
+                    : "No file selected"}
             </Text>
 
             {/* Title */}
@@ -168,7 +181,16 @@ export default function CreateDocument() {
                     ]}
                     onPress={() => setVisibility("public")}
                 >
-                    <Text>Public</Text>
+                    <Text
+                        style={{
+                            color:
+                                visibility === "public"
+                                    ? Colors.primary
+                                    : Colors.text,
+                        }}
+                    >
+                        Public
+                    </Text>
                 </Pressable>
 
                 <Pressable
@@ -178,7 +200,16 @@ export default function CreateDocument() {
                     ]}
                     onPress={() => setVisibility("private")}
                 >
-                    <Text>Private</Text>
+                    <Text
+                        style={{
+                            color:
+                                visibility === "private"
+                                    ? Colors.primary
+                                    : Colors.text,
+                        }}
+                    >
+                        Private
+                    </Text>
                 </Pressable>
 
             </View>
@@ -199,11 +230,7 @@ export default function CreateDocument() {
             {/*</Pressable>*/}
 
             <Pressable
-                style={{
-                    backgroundColor: "red",
-                    padding: 20,
-                    marginTop: 20,
-                }}
+                style={styles.uploadButton}
                 onPress={uploadDocument}
             >
                 <Text style={{ color: "white" }}>
@@ -211,36 +238,28 @@ export default function CreateDocument() {
                 </Text>
             </Pressable>
 
-        </View>
+        </Screen>
     );
 }
 
 const styles = StyleSheet.create({
 
-    container: {
-        flex: 1,
-        padding: 20,
-        justifyContent: "center",
-    },
-
-    heading: {
-        fontSize: 28,
-        fontWeight: "bold",
-        marginBottom: 30,
-        textAlign: "center",
-    },
-
     label: {
-        fontWeight: "bold",
-        marginTop: 15,
-        marginBottom: 5,
+        ...Typography.body,
+        fontWeight: "600",
+        marginTop: Spacing.lg,
+        marginBottom: Spacing.xs,
+        color: Colors.text,
     },
 
     input: {
+        backgroundColor: Colors.surface,
         borderWidth: 1,
-        borderColor: "#999",
-        borderRadius: 8,
-        padding: 10,
+        borderColor: Colors.border,
+        borderRadius: Radius.md,
+        paddingHorizontal: Spacing.md,
+        paddingVertical: Spacing.md,
+        ...Typography.body,
     },
 
     description: {
@@ -249,45 +268,51 @@ const styles = StyleSheet.create({
     },
 
     button: {
-        backgroundColor: "#4CAF50",
-        padding: 12,
-        borderRadius: 8,
+        backgroundColor: Colors.primary,
+        paddingVertical: Spacing.md,
+        borderRadius: Radius.md,
         alignItems: "center",
+        marginTop: Spacing.md,
     },
 
     uploadButton: {
-        backgroundColor: "#2196F3",
-        padding: 14,
-        borderRadius: 8,
+        backgroundColor: Colors.primary,
+        paddingVertical: Spacing.md,
+        borderRadius: Radius.md,
         alignItems: "center",
-        marginTop: 100,
+        marginTop: Spacing.xl,
     },
 
     buttonText: {
-        color: "white",
-        fontWeight: "bold",
+        ...Typography.button,
+        color: Colors.white,
     },
 
     fileText: {
-        marginTop: 10,
-        marginBottom: 10,
+        marginTop: Spacing.sm,
+        color: Colors.textSecondary,
+        ...Typography.bodySmall,
     },
 
     visibilityRow: {
         flexDirection: "row",
-        gap: 10,
+        gap: Spacing.md,
+        marginTop: Spacing.sm,
     },
 
     visibilityButton: {
         flex: 1,
+        backgroundColor: Colors.surface,
         borderWidth: 1,
-        padding: 12,
+        borderColor: Colors.border,
+        borderRadius: Radius.md,
+        paddingVertical: Spacing.md,
         alignItems: "center",
-        borderRadius: 8,
     },
 
     selected: {
-        backgroundColor: "#BDE5FF",
+        backgroundColor: Colors.primaryLight,
+        borderColor: Colors.primary,
     },
 
 });
