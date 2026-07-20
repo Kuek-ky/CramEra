@@ -1,6 +1,15 @@
 import { Text, View, StyleSheet, Image, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import globalStyles from "@/app/global-stylesheet";
+import Screen from "@/components/common/Screen";
+import Header from "@/components/common/Header";
+import Card from "@/components/common/Card";
+
+import {
+    Colors,
+    Radius,
+    Spacing,
+    Typography,
+} from "@/theme/Index";
 
 type PublicDocument = {
     documentId: number;
@@ -53,92 +62,100 @@ export default function Profile() {
     ];
 
     const styles = StyleSheet.create({
+
         container: {
+            paddingBottom: Spacing.xl,
+        },
+
+        profileCard: {
             alignItems: "center",
+            marginBottom: Spacing.xl,
         },
-        pageTitle: {
-            fontSize: 28,
-            fontWeight: "600",
-            marginBottom: 20,
+
+        profileImage: {
+            width: 90,
+            height: 90,
+            borderRadius: 45,
+            marginBottom: Spacing.md,
         },
-        profileCard:{
-            backgroundColor: "white",
-            borderRadius: 20,
-            padding: 24,
-            marginBottom: 28,
-            width: "100%",
-            alignItems: "center"
+
+        username: {
+            ...Typography.h2,
         },
-        username:{
-            fontSize:24,
+
+        email: {
+            ...Typography.body,
+            color: Colors.textSecondary,
+            marginTop: 4,
         },
-        email:{
-            fontSize:16,
-            marginTop:4,
-            color: "#4B5563",
-        },
-        profileImage:{
-            width: 80,
-            height: 80,
-            borderRadius: 40,
-            marginBottom: 16,
-        },
+
         documentsSection: {
             width: "100%",
         },
+
         sectionTitle: {
-            fontSize: 22,
-            fontWeight: "500",
-            color: "#111827",
-            marginBottom: 12,
+            ...Typography.h3,
+            marginBottom: Spacing.md,
         },
+
         documentCard: {
-            width: "100%",
-            borderRadius: 16,
-            padding: 14,
-            marginBottom: 12,
             flexDirection: "row",
             alignItems: "center",
-            backgroundColor: "white",
+            marginBottom: Spacing.md,
         },
+
         documentImage: {
             width: 70,
             height: 70,
-            borderRadius: 35,
-            marginRight: 14,
-            backgroundColor: "#E5E7EB",
+            borderRadius: Radius.md,
+            marginRight: Spacing.md,
+            backgroundColor: Colors.background,
         },
+
         documentInfo: {
             flex: 1,
         },
+
         documentTitle: {
-            fontSize: 16,
-            fontWeight: "500",
-            color: "#111827",
+            ...Typography.body,
+            fontWeight: "700",
             marginBottom: 4,
         },
+
         documentDescription: {
-            fontSize: 14,
-            color: "#4B5563",
+            ...Typography.bodySmall,
+            color: Colors.textSecondary,
             marginBottom: 4,
         },
+
         documentExtraDetails: {
-            fontSize: 12,
-            color: "#9CA3AF",
+            ...Typography.caption,
+            color: Colors.textSecondary,
         },
+
+        empty: {
+            ...Typography.body,
+            color: Colors.textSecondary,
+            textAlign: "center",
+            marginTop: Spacing.lg,
+        },
+
     });
 
     return (
-        <ScrollView
-            contentContainerStyle={[
-                globalStyles.container,
-                styles.container,
-            ]}
-        >
-            <Text style={styles.pageTitle}>
-                Profile Page
-            </Text>
-            <View style={styles.profileCard}>
+        <Screen>
+
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.container}
+            ></ScrollView>
+
+            <Header
+                title="Profile"
+                subtitle="Manage your account"
+            />
+
+            <Card style={styles.profileCard}>
                 <Image
                     source={profilePlaceholder}
                     style={styles.profileImage}
@@ -146,14 +163,19 @@ export default function Profile() {
 
                 <Text style={styles.username}>{displayName}</Text>
                 <Text style={styles.email}>{displayEmail}</Text>
-            </View>
+            </Card>
 
             <View style={styles.documentsSection}>
-                <Text style={styles.sectionTitle}>Public Documents</Text>
+                <Text style={styles.sectionTitle}>
+                    Shared Documents
+                </Text>
 
                 {doesPrevPageShowDocs ? (
                     publicDocuments.map((document) => (
-                        <View key={document.documentId} style={styles.documentCard}>
+                        <Card
+                            key={document.documentId}
+                            style={styles.documentCard}
+                        >
                             <Image
                                 source={document.image}
                                 style={styles.documentImage}
@@ -172,13 +194,15 @@ export default function Profile() {
                                     {document.fileType} · {document.createdAt}
                                 </Text>
                             </View>
-                        </View>
+                        </Card>
                     ))
                 ) : (
-                    <Text> No documents uploaded yet. </Text>
+                    <Text style={styles.empty}>
+                        No documents uploaded yet.
+                    </Text>
                 )}
             </View>
 
-        </ScrollView>
+        </Screen>
     );
 }
