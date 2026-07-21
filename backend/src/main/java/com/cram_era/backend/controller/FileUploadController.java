@@ -54,9 +54,16 @@ public class FileUploadController {
 
 	@PostMapping(path="/upload")
 	public ResponseEntity<String> handleFileUpload(@RequestPart("file") MultipartFile file,
-	                               @RequestPart("document") Document newDoc){
+	                                               @RequestPart("document") String documentJson) {
+		ObjectMapper mapper = new ObjectMapper();
 
-		System.out.println("UPLOAD HIT");
+		Document newDoc;
+		try {
+			newDoc = mapper.readValue(documentJson, Document.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Invalid JSON payload");
+		}
 
 		String fileUrl = "";
 		int docOwnerId = newDoc.getOwnerUserID();
@@ -74,19 +81,7 @@ public class FileUploadController {
 			newDoc.setFileURL(uniqueFileName);
 			newDoc.setFileType(fileType);
 
-
-			System.out.println("Title = " + newDoc.getTitle());
-			System.out.println("Description = " + newDoc.getDescription());
-
 			Document saved = documentRepository.save(newDoc);
-
-			System.out.println("Saved successfully");
-			System.out.println(saved.getId());
-
-			long count = documentRepository.count();
-			System.out.println("Count = " + count);
-
-			System.out.println("About to return");
 
 			return ResponseEntity.ok("Upload successful");
 

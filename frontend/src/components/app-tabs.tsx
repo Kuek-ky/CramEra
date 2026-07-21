@@ -1,68 +1,134 @@
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
-import { useColorScheme } from 'react-native';
+import {Tabs} from "expo-router";
+import {Image, Text, View} from "react-native";
 
-import { Colors } from '@/constants/theme';
+import {Colors} from "@/theme/Colors";
+import style from "./app-tabs-stylesheet";
+
+interface TabIconProps {
+    name: string;
+    src: any;
+    color: string;
+    focused: boolean;
+}
 
 export default function AppTabs() {
-  const scheme = useColorScheme();
-  const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
+    const TabIcon = ({
+        name,
+        src,
+        color,
+        focused,
+    }: TabIconProps) => {
+        return (
+            <View
+                style={
+                    focused
+                        ? style.floatingTabBtnContainer
+                        : style.defaultTabBtnContainer
+                }
+            >
+                <Image
+                    source={src}
+                    style={[
+                        style.icon,
+                        {
+                            tintColor: color,
+                        },
+                    ]}
+                />
 
-  // return (
-  //   <NativeTabs
-  //     backgroundColor={colors.background}
-  //     indicatorColor={colors.backgroundElement}
-  //     labelStyle={{ selected: { color: colors.text } }}>
-  //     <NativeTabs.Trigger name="index">
-  //       <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
-  //       <NativeTabs.Trigger.Icon
-  //         src={require('@/assets/images/tabIcons/home.png')}
-  //         renderingMode="template"
-  //       />
-  //     </NativeTabs.Trigger>
-  //
-  //     <NativeTabs.Trigger name="explore">
-  //       <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
-  //       <NativeTabs.Trigger.Icon
-  //         src={require('@/assets/images/tabIcons/explore.png')}
-  //         renderingMode="template"
-  //       />
-  //     </NativeTabs.Trigger>
-  //   </NativeTabs>
-  // );
+                <Text
+                    style={[
+                        style.tabText,
+                        {
+                            color,
+                        },
+                    ]}
+                >
+                    {name}
+                </Text>
+            </View>
+        );
+    };
 
     return (
-        <NativeTabs
-            backgroundColor={colors.background}
-            indicatorColor={colors.backgroundElement}
-            labelStyle={{ selected: { color: colors.text } }}>
+        <Tabs
+            screenOptions={{
+                headerShown: false,
+                tabBarShowLabel: false,
+                tabBarStyle: style.floatingTabBar,
+                tabBarActiveTintColor: Colors.white,
+                tabBarInactiveTintColor: Colors.textSecondary,
+            }}
+        >
+            <Tabs.Screen
+                name="personal_documents"
+                options={{
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabIcon
+                            name="Docs"
+                            src={require("@/assets/images/tabIcons/document.png")}
+                            color={color}
+                            focused={focused}
+                        />
+                    ),
+                }}
+            />
 
-            {/* Holy Grail Library */}
-            <NativeTabs.Trigger name="index">
-                <NativeTabs.Trigger.Label>Library</NativeTabs.Trigger.Label>
-                <NativeTabs.Trigger.Icon
-                    src={require('@/assets/images/tabIcons/home.png')}
-                    renderingMode="template"
-                />
-            </NativeTabs.Trigger>
+            <Tabs.Screen
+                name="flashcards"
+                options={{
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabIcon
+                            name="Flashcards"
+                            src={require("@/assets/images/tabIcons/flashcards.png")}
+                            color={color}
+                            focused={focused}
+                        />
+                    ),
+                }}
+            />
 
-            {/* Search */}
-            <NativeTabs.Trigger name="search">
-                <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
-                <NativeTabs.Trigger.Icon
-                    src={require('@/assets/images/tabIcons/explore.png')}
-                    renderingMode="template"
-                />
-            </NativeTabs.Trigger>
+            <Tabs.Screen
+                name="home"
+                options={{
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabIcon
+                            name="Home"
+                            src={require("@/assets/images/tabIcons/home.png")}
+                            color={color}
+                            focused={focused}
+                        />
+                    ),
+                }}
+            />
 
-            {/* Personal Documents */}
-            <NativeTabs.Trigger name="personal">
-                <NativeTabs.Trigger.Label>My Docs</NativeTabs.Trigger.Label>
-                <NativeTabs.Trigger.Icon
-                    src={require('@/assets/images/tabIcons/home.png')}
-                    renderingMode="template"
-                />
-            </NativeTabs.Trigger>
+            <Tabs.Screen
+                name="holygrail"
+                options={{
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabIcon
+                            name="The Grail"
+                            src={require("@/assets/images/tabIcons/search.png")}
+                            color={color}
+                            focused={focused}
+                        />
+                    ),
+                }}
+            />
 
-        </NativeTabs>
+            <Tabs.Screen
+                name="settings"
+                options={{
+                    tabBarIcon: ({ color, focused }) => (
+                        <TabIcon
+                            name="Settings"
+                            src={require("@/assets/images/tabIcons/settings.png")}
+                            color={color}
+                            focused={focused}
+                        />
+                    ),
+                }}
+            />
+        </Tabs>
     );
 }

@@ -13,7 +13,7 @@ import com.cram_era.backend.entities.UserLogin;
 import com.cram_era.backend.entities.LoginResponse;
 
 // in charge of receiving request, reading JSON body, printing to console
-@CrossOrigin(origins = {"http://localhost:8081", "http://127.0.0.1:8081"})
+@CrossOrigin(origins = {"http://172.18.110.10:8081", "http://127.0.0.1:8081"})
 @RestController
 public class UserController {
     private final UserService userService;
@@ -24,9 +24,9 @@ public class UserController {
 
     // to create user, use @PostMapping instead of @GetMapping, latter is more for giving information
     @PostMapping("/api/users")
-    public ResponseEntity<String> receiveRequest(@RequestBody UserCreation userCreation) {
+    public ResponseEntity<?> receiveRequest(@RequestBody UserCreation userCreation) {
         try {
-            String result = userService.createUser(userCreation);
+            LoginResponse result = userService.createUser(userCreation);
             return ResponseEntity.ok(result);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

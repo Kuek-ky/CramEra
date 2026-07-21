@@ -46,3 +46,4 @@ example
 **/.DS_Store
 .vscode
 
+.env

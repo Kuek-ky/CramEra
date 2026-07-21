@@ -36,6 +36,7 @@ public class SearchController {
     public ResponseEntity<List<Module>> search(
             @RequestParam(required = false) String name
     ) {
+        System.out.println("name -> " + name);
         List<Module> results =
                 searchService.searchModulesByName(name);
         return ResponseEntity.ok(results);
