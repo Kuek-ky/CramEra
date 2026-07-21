@@ -6,6 +6,7 @@ import {
     Pressable,
     StyleSheet,
     Alert,
+    ActivityIndicator
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import SearchModules from '../components/modulesSearchBar';
@@ -33,6 +34,7 @@ export default function CreateDocument() {
     const [description, setDescription] = useState("");
     const [visibility, setVisibility] = useState("public");
 
+    const [isLoading, setLoading] = useState(false);
     // ===== Buttons =====
 
     const chooseFile = async () => {
@@ -54,15 +56,26 @@ export default function CreateDocument() {
 
     const uploadDocument = async () => {
 
+        setLoading(true);
+
         if (!selectedFile) {
-            alert("No file");
+            setLoading(false);
+            alert("File is required");
             return;
         }
 
         if (!title.trim()) {
-            alert("No title");
+            setLoading(false);
+            alert("Title is required");
             return;
         }
+
+        if (moduleID <= 0 || !moduleID) {
+            setLoading(false);
+            alert("Module is required");
+            return;
+        }
+
         const userId = await getStoredUserId();
 
         const document = {
@@ -89,6 +102,7 @@ export default function CreateDocument() {
         xhr.open('POST', `${API_BASE}/file/upload`);
 
         xhr.onload = () => {
+            setLoading(false);
             if (xhr.status >= 200 && xhr.status < 300) {
                 console.log("Upload success:", xhr.responseText);
                 Alert.alert("Success", "Document uploaded successfully!");
@@ -102,12 +116,13 @@ export default function CreateDocument() {
         };
 
         xhr.onerror = () => {
+            setLoading(false);
+
             console.error("Network request failed");
             Alert.alert("Network Error", "Could not connect to the server. Please check your connection.");
         };
 
         xhr.send(formData);
-
 
     };
 
@@ -226,12 +241,17 @@ export default function CreateDocument() {
 
             {/* Upload */}
             <Pressable
+                disabled={isLoading}
                 style={styles.uploadButton}
                 onPress={uploadDocument}
-            >
-                <Text style={{ color: "white" }}>
-                    Upload
-                </Text>
+            >{
+                isLoading ?
+                    <ActivityIndicator size={'small'} color={'white'} />
+                    :
+                    <Text style={{color: "white"}}>
+                        Upload
+                    </Text>
+            }
             </Pressable>
 
         </Screen>
