@@ -1,30 +1,49 @@
 import { useState } from "react";
-import { Pressable, Text, TextInput, View, ActivityIndicator } from "react-native";
 import { Link, router } from "expo-router";
 
-// const API_BASE = "http://172.18.77.219:8080"; //ip address to come from your wsl container, NOT YOUR LOCAL MACHINE
-const API_BASE = "http://localhost:8080";
+import {
+    ActivityIndicator,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
+} from "react-native";
 
-function sleep(ms: number){
+import Screen from "@/components/common/Screen";
+import Card from "@/components/common/Card";
+
+import {
+    Colors,
+    Spacing,
+    Radius,
+    Typography,
+} from "@/theme/Index";
+import {storeUserData, userStorage} from "@/api/asyncStoreUser";
+
+const API_BASE = process.env.EXPO_PUBLIC_API_URL;
+console.log(API_BASE)
+
+function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 // Artificial delay for around 2 seconds to make it less clunky for the loading -> result process
 
-export default function Login(){
+export default function Login() {
     const [userName, setUserName] = useState("");
     const [userPassword, setUserPassword] = useState("");
     const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
     // ^^ in charge of what UI to show, status can only be one of these 4 string values
     // By default, it will be in idle state
-    const [message,setMessage] = useState("");
+    const [message, setMessage] = useState("");
     // ^^ stores backend response/ error message
 
-    async function submitButton(){
-        if (userName.trim() === ""){
+    async function submitButton() {
+        if (userName.trim() === "") {
             setStatus("error");
             setMessage("Please enter a username.");
             return;
-        } else if (userPassword.trim() === ""){
+        } else if (userPassword.trim() === "") {
             setStatus("error");
             setMessage("Please enter a password.");
             return;
@@ -37,7 +56,7 @@ export default function Login(){
 
             const response = await fetch(`${API_BASE}/api/login`, {
                 method: "POST",
-                headers:{"Content-Type":"application/json",},
+                headers: { "Content-Type": "application/json", },
                 body: JSON.stringify({
                     userName: userName,
                     userPassword: userPassword
@@ -47,83 +66,143 @@ export default function Login(){
 
             await sleep(1000);
 
-            if (response.ok){
+            if (response.ok) {
                 const user = await response.json();
-                router.push({
-                    pathname: "/profile",
-                    params: {
-                        userName: user.userName,
-                        userEmail: user.userEmail,
-                    },
-                });
+                await storeUserData(user.userId, user.userName, user.userEmail);
+
+                router.replace({
+                    pathname: "/maintabs/home"
+                })
             } else {
                 const result = await response.text();
 
                 setStatus("error");
                 setMessage(result);
             }
-        } catch (error){
+        } catch (error) {
             await sleep(1000);
             setStatus("error");
-            setMessage("Cannot reach backend :(");
+            setMessage("Login failed");
         }
     }
 
     return (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 24 }}>
-            <View style={{
-                    width: 320,
-                    padding: 28,
-                    borderWidth: 1,
-                    borderColor: "#ddd",
-                    borderRadius: 12,
-                    backgroundColor: "white",
-                    alignItems: "center",
-                }}>
-                <Text style={{ fontSize: 28, fontWeight: "600", marginBottom: 32 }}>Login</Text>
+        <Screen>
+            <Card style={styles.card}>
+                <Text style={styles.title}>
+                    Welcome Back
+                </Text>
+
+                <Text style={styles.subtitle}>
+                    Sign in to continue
+                </Text>
                 <TextInput
                     placeholder="Username"
-                    value = {userName}
+                    value={userName}
                     onChangeText={setUserName}
-                    style={{borderWidth: 1, marginTop:12, padding: 8, borderRadius: 12, width: "100%"}}/>
+                    style={styles.input} />
                 <TextInput
                     placeholder="Password"
-                    value = {userPassword}
+                    value={userPassword}
                     onChangeText={setUserPassword}
                     secureTextEntry={true}
-                    style={{borderWidth: 1, marginTop:12, padding: 8, borderRadius: 12, width: "100%"}}/>
+                    style={styles.input} />
 
                 <Pressable
                     onPress={submitButton}
                     disabled={status === "loading"}
                     // ^^ to avoid impatient ppl from spamming the button
-                    style={{
-                        marginTop: 16,
-                        width: "100%",
-                        backgroundColor: status === "loading" ? "#9CA3AF" : "#00AEEF",
-                        padding: 8,
-                        borderRadius: 12,
-                        alignItems: "center",
-                    }}
+                    style={[
+                        styles.button,
+                        status === "loading" && styles.buttonDisabled,
+                    ]}
                 >
-                    <Text style={{color: "white", fontWeight:"400"}}>
-                        {status === "loading"? "Signing in..." : "Sign in"}
+                    <Text style={styles.buttonText}>
+                        {status === "loading" ? "Signing in..." : "Sign in"}
                     </Text>
                 </Pressable>
                 {status === "loading" && <ActivityIndicator style={{ marginTop: 16 }} />}
-                {status === "error" && <Text style={{ marginTop: 16, color: "red" }}>{message}</Text>}
+                {status === "error" && <Text style={styles.error}>{message}</Text>}
 
-                <View style={{ flexDirection: "row", marginTop: 16 }}>
+                <View style={styles.footer}>
                     <Text>Don't have an account? </Text>
 
                     <Link href="/signup">
-                        <Text style={{ color: "#00AEEF", textDecorationLine: "underline" }}>
+                        <Text style={styles.link}>
                             Create account
                         </Text>
                     </Link>
                 </View>
-            </View>
-        </View>
+            </Card>
+        </Screen>
     );
 }
+
+const styles = StyleSheet.create({
+    card: {
+        width: "100%",
+        maxWidth: 360,
+        alignSelf: "center",
+        marginTop: 100,
+        alignItems: "center",
+    },
+
+    title: {
+        ...Typography.h1,
+        marginBottom: Spacing.xs,
+    },
+
+    subtitle: {
+        ...Typography.body,
+        color: Colors.textSecondary,
+        marginBottom: Spacing.xl,
+    },
+
+    input: {
+        width: "100%",
+        backgroundColor: Colors.surface,
+        borderWidth: 1,
+        borderColor: Colors.border,
+        borderRadius: Radius.md,
+        paddingHorizontal: Spacing.md,
+        paddingVertical: Spacing.md,
+        marginTop: Spacing.md,
+        ...Typography.body,
+    },
+
+    button: {
+        marginTop: Spacing.lg,
+        width: "100%",
+        backgroundColor: Colors.primary,
+        paddingVertical: Spacing.md,
+        borderRadius: Radius.md,
+        alignItems: "center",
+    },
+
+    buttonDisabled: {
+        backgroundColor: Colors.border,
+    },
+
+    buttonText: {
+        ...Typography.button,
+        color: Colors.white,
+    },
+
+    error: {
+        marginTop: Spacing.md,
+        color: Colors.danger,
+        ...Typography.bodySmall,
+    },
+
+    footer: {
+        flexDirection: "row",
+        marginTop: Spacing.lg,
+    },
+
+    link: {
+        color: Colors.primary,
+        textDecorationLine: "underline",
+        ...Typography.bodySmall,
+    },
+});
 

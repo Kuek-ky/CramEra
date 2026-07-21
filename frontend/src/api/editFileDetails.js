@@ -1,12 +1,11 @@
 import * as UploadTask from 'expo-file-system';
+const API_BASE = process.env.BASE_API_URL;
 
 export const editDocumentDetails = async (
     fileId, file, ownerUserId,
     moduleId, title, description,
     documentType
 ) => {
-  console.log("on edit");
-
   try {
     let data = new FormData();
     if (file != null) {
@@ -32,7 +31,7 @@ export const editDocumentDetails = async (
     console.log("payload ->", data);
 
     var xhr = new XMLHttpRequest();
-    xhr.open('PUT', `http://172.18.110.10:8080/file/update/${fileId}`);
+    xhr.open('PUT', `${API_BASE}/file/update/${fileId}`);
     xhr.send(data);
 
     if (!xhr) {

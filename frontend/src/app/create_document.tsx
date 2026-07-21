@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
@@ -6,25 +6,36 @@ import {
     Pressable,
     StyleSheet,
     Alert,
+    ActivityIndicator
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
+import SearchModules from '../components/modulesSearchBar';
+import {getStoredUserId} from "@/api/asyncStoreUser";
 
-const API_BASE = "http://192.168.1.119:8080";
+import Screen from "@/components/common/Screen";
+import Header from "@/components/common/Header";
+
+import {
+    Colors,
+    Radius,
+    Spacing,
+    Typography,
+} from "@/theme/Index";
+import {router} from "expo-router";
+
+const API_BASE = process.env.EXPO_PUBLIC_API_URL;
 export default function CreateDocument() {
 
     // ===== State =====
+    const [moduleID, setModuleID] = useState(0);
+    const [moduleName, setModuleName] = useState('');
     const [selectedFile, setSelectedFile] = useState<any>(null);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [visibility, setVisibility] = useState("public");
 
+    const [isLoading, setLoading] = useState(false);
     // ===== Buttons =====
-
-    // only for testin
-    // const chooseFile = () => {
-    //     // We'll replace this with the real document picker later
-    //     setSelectedFile("lecture5.pdf");
-    // };
 
     const chooseFile = async () => {
 
@@ -45,71 +56,84 @@ export default function CreateDocument() {
 
     const uploadDocument = async () => {
 
+        setLoading(true);
+
         if (!selectedFile) {
-            alert("No file");
+            setLoading(false);
+            alert("File is required");
             return;
         }
 
         if (!title.trim()) {
-            alert("No title");
+            setLoading(false);
+            alert("Title is required");
             return;
         }
 
+        if (moduleID <= 0 || !moduleID) {
+            setLoading(false);
+            alert("Module is required");
+            return;
+        }
+
+        const userId = await getStoredUserId();
+
         const document = {
-            ownerUserID: 1,
-            title,
-            description,
-            visibility,
-            module: {
-                id: 1
-            }
-        };
+            "ownerUserID": parseInt(userId || "1", 10),
+            "module": {"id":moduleID},
+            "title": title,
+            "description": description,
+            "visibility": visibility
+        }
 
         const formData = new FormData();
 
-        formData.append(
-            "file",
-            selectedFile.file,
-            selectedFile.name
-        );
+        formData.append("file", {
+            uri: selectedFile.uri,
+            name: selectedFile.name,
+            type: selectedFile.mimeType
+        } as any);
 
         formData.append(
-            "document",
-            new Blob(
-                [JSON.stringify(document)],
-                {
-                    type: "application/json"
-                }
-            )
+            "document", JSON.stringify(document)
         );
 
-        console.log(selectedFile.file);
-        console.log(formData.get("file"));
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', `${API_BASE}/file/upload`);
 
-        const response = await fetch(`${API_BASE}/file/upload`, {
-            method: "POST",
-            body: formData,
-        });
+        xhr.onload = () => {
+            setLoading(false);
+            if (xhr.status >= 200 && xhr.status < 300) {
+                console.log("Upload success:", xhr.responseText);
+                Alert.alert("Success", "Document uploaded successfully!");
+                router.replace({
+                    pathname: "/maintabs/home"
+                })
+            } else {
+                console.error(`Backend error (${xhr.status}):`, xhr.responseText);
+                Alert.alert("Upload Failed", `Server Error: ${xhr.responseText}`);
+            }
+        };
 
-        const text = await response.text();
+        xhr.onerror = () => {
+            setLoading(false);
 
-        console.log(text);
+            console.error("Network request failed");
+            Alert.alert("Network Error", "Could not connect to the server. Please check your connection.");
+        };
 
-        Alert.alert(text);
-
-        console.log(selectedFile.file.name);
-        console.log(selectedFile.file.size);
-        console.log(selectedFile.file.type);
+        xhr.send(formData);
 
     };
 
 
     return (
-        <View style={styles.container}>
+        <Screen>
 
-            <Text style={styles.heading}>
-                Create Document
-            </Text>
+            <Header
+                title="Create Document"
+                subtitle="Upload and share your study materials"
+            />
 
             {/* Choose File */}
 
@@ -123,7 +147,9 @@ export default function CreateDocument() {
             </Pressable>
 
             <Text style={styles.fileText}>
-                {selectedFile ? selectedFile.name : "No file selected"}
+                {selectedFile
+                    ? `Selected: ${selectedFile.name}`
+                    : "No file selected"}
             </Text>
 
             {/* Title */}
@@ -138,6 +164,18 @@ export default function CreateDocument() {
                 value={title}
                 onChangeText={setTitle}
             />
+
+            {/* Module Select */}
+            <View style={{ marginBottom: 15 }}>
+                <SearchModules
+                    initialId={moduleID}
+                    initialCodeName={moduleName}
+                    onSelectModule={(selectedItem) => {
+                        setModuleName(selectedItem.moduleName);
+                        setModuleID(selectedItem.id);
+                    }}
+                />
+            </View>
 
             {/* Description */}
 
@@ -168,7 +206,16 @@ export default function CreateDocument() {
                     ]}
                     onPress={() => setVisibility("public")}
                 >
-                    <Text>Public</Text>
+                    <Text
+                        style={{
+                            color:
+                                visibility === "public"
+                                    ? Colors.primary
+                                    : Colors.text,
+                        }}
+                    >
+                        Public
+                    </Text>
                 </Pressable>
 
                 <Pressable
@@ -178,69 +225,57 @@ export default function CreateDocument() {
                     ]}
                     onPress={() => setVisibility("private")}
                 >
-                    <Text>Private</Text>
+                    <Text
+                        style={{
+                            color:
+                                visibility === "private"
+                                    ? Colors.primary
+                                    : Colors.text,
+                        }}
+                    >
+                        Private
+                    </Text>
                 </Pressable>
 
             </View>
 
             {/* Upload */}
-
-            {/*<Pressable*/}
-            {/*    style={{*/}
-            {/*        backgroundColor: "red",*/}
-            {/*        padding: 20,*/}
-            {/*        marginTop: 20,*/}
-            {/*    }}*/}
-            {/*    onPress={uploadDocument}*/}
-            {/*>*/}
-            {/*    <Text style={{ color: "white" }}>*/}
-            {/*        Upload*/}
-            {/*    </Text>*/}
-            {/*</Pressable>*/}
-
             <Pressable
-                style={{
-                    backgroundColor: "red",
-                    padding: 20,
-                    marginTop: 20,
-                }}
+                disabled={isLoading}
+                style={styles.uploadButton}
                 onPress={uploadDocument}
-            >
-                <Text style={{ color: "white" }}>
-                    Upload
-                </Text>
+            >{
+                isLoading ?
+                    <ActivityIndicator size={'small'} color={'white'} />
+                    :
+                    <Text style={{color: "white"}}>
+                        Upload
+                    </Text>
+            }
             </Pressable>
 
-        </View>
+        </Screen>
     );
 }
 
 const styles = StyleSheet.create({
 
-    container: {
-        flex: 1,
-        padding: 20,
-        justifyContent: "center",
-    },
-
-    heading: {
-        fontSize: 28,
-        fontWeight: "bold",
-        marginBottom: 30,
-        textAlign: "center",
-    },
-
     label: {
-        fontWeight: "bold",
-        marginTop: 15,
-        marginBottom: 5,
+        ...Typography.body,
+        fontWeight: "600",
+        marginTop: Spacing.lg,
+        marginBottom: Spacing.xs,
+        color: Colors.text,
     },
 
     input: {
+        backgroundColor: Colors.surface,
         borderWidth: 1,
-        borderColor: "#999",
-        borderRadius: 8,
-        padding: 10,
+        borderColor: Colors.border,
+        borderRadius: Radius.md,
+        paddingHorizontal: Spacing.md,
+        paddingVertical: Spacing.md,
+        ...Typography.body,
     },
 
     description: {
@@ -249,45 +284,51 @@ const styles = StyleSheet.create({
     },
 
     button: {
-        backgroundColor: "#4CAF50",
-        padding: 12,
-        borderRadius: 8,
+        backgroundColor: Colors.primary,
+        paddingVertical: Spacing.md,
+        borderRadius: Radius.md,
         alignItems: "center",
+        marginTop: Spacing.md,
     },
 
     uploadButton: {
-        backgroundColor: "#2196F3",
-        padding: 14,
-        borderRadius: 8,
+        backgroundColor: Colors.primary,
+        paddingVertical: Spacing.md,
+        borderRadius: Radius.md,
         alignItems: "center",
-        marginTop: 100,
+        marginTop: Spacing.xl,
     },
 
     buttonText: {
-        color: "white",
-        fontWeight: "bold",
+        ...Typography.button,
+        color: Colors.white,
     },
 
     fileText: {
-        marginTop: 10,
-        marginBottom: 10,
+        marginTop: Spacing.sm,
+        color: Colors.textSecondary,
+        ...Typography.bodySmall,
     },
 
     visibilityRow: {
         flexDirection: "row",
-        gap: 10,
+        gap: Spacing.md,
+        marginTop: Spacing.sm,
     },
 
     visibilityButton: {
         flex: 1,
+        backgroundColor: Colors.surface,
         borderWidth: 1,
-        padding: 12,
+        borderColor: Colors.border,
+        borderRadius: Radius.md,
+        paddingVertical: Spacing.md,
         alignItems: "center",
-        borderRadius: 8,
     },
 
     selected: {
-        backgroundColor: "#BDE5FF",
+        backgroundColor: Colors.primaryLight,
+        borderColor: Colors.primary,
     },
 
 });

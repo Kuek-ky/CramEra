@@ -1,6 +1,17 @@
 import { Text, View, StyleSheet, Image, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
+import Screen from "@/components/common/Screen";
+import Header from "@/components/common/Header";
+import Card from "@/components/common/Card";
 
+import {
+    Colors,
+    Radius,
+    Spacing,
+    Typography,
+} from "@/theme/Index";
+import {useEffect, useState} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type PublicDocument = {
     documentId: number;
@@ -17,11 +28,31 @@ const documentPlaceholder2 = require("../../assets/images/document-placeholder-2
 const documentPlaceholder3 = require("../../assets/images/document-placeholder-3.png");
 
 export default function Profile() {
-    const { userName, userEmail } = useLocalSearchParams();
-    const displayName = userName ?? "Unknown User";
-    // ?? -> If username is missing, return back "Unknown User"
-    const displayEmail = userEmail ?? "No email found";
-    // ?? -> If userEmail is missing, return back "No email found"
+    const [displayName, setDisplayName] = useState('');
+    const [displayEmail, setDisplayEmail] = useState('');
+    useEffect(() => {
+        const getMultiple = async () => {
+            try {
+                // 1. Use multiGet with an array of keys
+                const keyValuePairs = await AsyncStorage.multiGet(["userName", "userEmail"]);
+                const data = Object.fromEntries(keyValuePairs);
+
+                console.log(data);
+
+                setDisplayName(data.userName ?? "Unknown User");
+                // ?? -> If username is missing, return back "Unknown User"
+                setDisplayEmail(data.userEmail ?? "No email found");
+                // ?? -> If userEmail is missing, return back "No email found"
+
+            } catch (error) {
+                console.log("Error fetching user data:", error);
+            }
+        };
+        getMultiple();
+    }, []);
+
+    const { showDocs } = useLocalSearchParams();
+    const doesPrevPageShowDocs = showDocs === "true";
 
     const publicDocuments: PublicDocument[] = [
         {
@@ -51,91 +82,100 @@ export default function Profile() {
     ];
 
     const styles = StyleSheet.create({
+
         container: {
-            flex: 1,
+            paddingBottom: Spacing.xl,
+        },
+
+        profileCard: {
             alignItems: "center",
-            padding: 24,
-            backgroundColor: "#F4F7FB",
+            marginBottom: Spacing.xl,
         },
-        pageTitle: {
-            fontSize: 28,
-            fontWeight: "600",
-            marginBottom: 20,
+
+        profileImage: {
+            width: 90,
+            height: 90,
+            borderRadius: 45,
+            marginBottom: Spacing.md,
         },
-        profileCard:{
-            backgroundColor: "white",
-            borderRadius: 20,
-            padding: 24,
-            marginBottom: 28,
-            width: "100%",
-            alignItems: "center"
+
+        username: {
+            ...Typography.h2,
         },
-        username:{
-            fontSize:24,
+
+        email: {
+            ...Typography.body,
+            color: Colors.textSecondary,
+            marginTop: 4,
         },
-        email:{
-            fontSize:16,
-            marginTop:4,
-            color: "#4B5563",
-        },
-        profileImage:{
-            width: 80,
-            height: 80,
-            borderRadius: 40,
-            marginBottom: 16,
-        },
+
         documentsSection: {
             width: "100%",
         },
+
         sectionTitle: {
-            fontSize: 22,
-            fontWeight: "500",
-            color: "#111827",
-            marginBottom: 12,
+            ...Typography.h3,
+            marginBottom: Spacing.md,
         },
+
         documentCard: {
-            width: "100%",
-            borderRadius: 16,
-            padding: 14,
-            marginBottom: 12,
             flexDirection: "row",
             alignItems: "center",
-            backgroundColor: "white",
-            borderWidth: 2,
+            marginBottom: Spacing.md,
         },
+
         documentImage: {
             width: 70,
             height: 70,
-            borderRadius: 35,
-            marginRight: 14,
-            backgroundColor: "#E5E7EB",
+            borderRadius: Radius.md,
+            marginRight: Spacing.md,
+            backgroundColor: Colors.background,
         },
+
         documentInfo: {
             flex: 1,
         },
+
         documentTitle: {
-            fontSize: 16,
-            fontWeight: "500",
-            color: "#111827",
+            ...Typography.body,
+            fontWeight: "700",
             marginBottom: 4,
         },
+
         documentDescription: {
-            fontSize: 14,
-            color: "#4B5563",
+            ...Typography.bodySmall,
+            color: Colors.textSecondary,
             marginBottom: 4,
         },
+
         documentExtraDetails: {
-            fontSize: 12,
-            color: "#9CA3AF",
+            ...Typography.caption,
+            color: Colors.textSecondary,
         },
+
+        empty: {
+            ...Typography.body,
+            color: Colors.textSecondary,
+            textAlign: "center",
+            marginTop: Spacing.lg,
+        },
+
     });
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.pageTitle}>
-                Profile Page
-            </Text>
-            <View style={styles.profileCard}>
+        <Screen>
+
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.container}
+            ></ScrollView>
+
+            <Header
+                title="Profile"
+                subtitle="Manage your account"
+            />
+
+            <Card style={styles.profileCard}>
                 <Image
                     source={profilePlaceholder}
                     style={styles.profileImage}
@@ -143,31 +183,46 @@ export default function Profile() {
 
                 <Text style={styles.username}>{displayName}</Text>
                 <Text style={styles.email}>{displayEmail}</Text>
-            </View>
+            </Card>
 
             <View style={styles.documentsSection}>
-                <Text style={styles.sectionTitle}>Public Documents</Text>
+                <Text style={styles.sectionTitle}>
+                    Shared Documents
+                </Text>
 
-                {publicDocuments.map((document) => (
-                    <View key={document.documentId} style={styles.documentCard}>
-                        <Image
-                            source={document.image}
-                            style={styles.documentImage}
-                        />
+                {doesPrevPageShowDocs ? (
+                    publicDocuments.map((document) => (
+                        <Card
+                            key={document.documentId}
+                            style={styles.documentCard}
+                        >
+                            <Image
+                                source={document.image}
+                                style={styles.documentImage}
+                            />
 
-                        <View style={styles.documentInfo}>
-                            <Text style={styles.documentTitle}>{document.title}</Text>
-                            <Text style={styles.documentDescription}>
-                                {document.description}
-                            </Text>
-                            <Text style={styles.documentExtraDetails}>
-                                {document.fileType} · {document.createdAt}
-                            </Text>
-                        </View>
-                    </View>
-                ))}
+                            <View style={styles.documentInfo}>
+                                <Text style={styles.documentTitle}>
+                                    {document.title}
+                                </Text>
+
+                                <Text style={styles.documentDescription}>
+                                    {document.description}
+                                </Text>
+
+                                <Text style={styles.documentExtraDetails}>
+                                    {document.fileType} · {document.createdAt}
+                                </Text>
+                            </View>
+                        </Card>
+                    ))
+                ) : (
+                    <Text style={styles.empty}>
+                        No documents uploaded yet.
+                    </Text>
+                )}
             </View>
 
-        </ScrollView>
+        </Screen>
     );
 }

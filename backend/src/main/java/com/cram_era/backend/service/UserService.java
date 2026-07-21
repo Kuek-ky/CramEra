@@ -21,7 +21,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public String createUser(UserCreation userCreation){
+    public LoginResponse createUser(UserCreation userCreation){
         checkUserEmailValidity(userCreation);
         checkUserNameValidity(userCreation);
         checkPasswordValidity(userCreation);
@@ -34,15 +34,17 @@ public class UserService {
         }
 
         User user = new User();
+        String userName = userCreation.getUserName().trim();
+        String userEmail = userCreation.getUserEmail().trim();
 
-        user.setUserName(userCreation.getUserName().trim());
-        user.setUserEmail(userCreation.getUserEmail().trim());
+        user.setUserName(userName);
+        user.setUserEmail(userEmail);
 
         String hashedPassword = passwordEncoder.encode(userCreation.getUserPassword());
         user.setPasswordHash(hashedPassword);
 
-        userDAO.save(user);
-        return "Account successfully created.";
+        int userId = userDAO.save(user).getUserId();
+        return new LoginResponse(userName, userEmail, userId);
     }
 
     public String checkUserNameValidity(UserCreation userCreation){
@@ -145,7 +147,7 @@ public class UserService {
             throw new IllegalArgumentException("Invalid username or password.");
         }
 
-        return new LoginResponse(user.getUserName(), user.getUserEmail());
+        return new LoginResponse(user.getUserName(), user.getUserEmail(), user.getUserId());
     }
 
 }
