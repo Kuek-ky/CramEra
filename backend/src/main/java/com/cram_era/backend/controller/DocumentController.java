@@ -33,11 +33,6 @@ public class DocumentController {
     }
 
     @GetMapping(path = "getMetaData/{id}")
-//    public Document getMetaDataById(@PathVariable("id") int id) {
-//
-//        return documentService.getDocumentById(id);
-//    }
-
     public ResponseEntity<Document> getMetaDataById(@PathVariable int id) {
         try {
             Document doc = documentService.getDocumentById(id);
@@ -49,11 +44,6 @@ public class DocumentController {
     }
 
     @GetMapping(path = "getFileUrl/{id}")
-//    public String getFileUrlById(@PathVariable("id") int id) {
-//
-////        return documentService.getFullDocumentUrlById(id);
-//    }
-
     public ResponseEntity<String> getFileUrlById(@PathVariable int id) {
         try {
             String url = documentService.getFullDocumentUrlById(id);
@@ -72,10 +62,6 @@ public class DocumentController {
 	}
 
 	@GetMapping("/view/{id}")
-//	public String viewFile(@PathVariable("id") int id) {
-//		return documentService.getPresignedUrl(id);
-//	}
-
     public ResponseEntity<String> viewFile(@PathVariable int id) {
 
         try {
@@ -94,22 +80,6 @@ public class DocumentController {
     }
 
     @GetMapping("/search")
-//    public List<Document> searchDocuments(
-//            @RequestParam(required = false) String name,
-//            @RequestParam(required = false) String docType,
-//            @RequestParam(required = false) String docTag,
-//            @RequestParam(required = false) String module
-//    ) {
-//
-//        return documentService.searchDocuments(
-//                name,
-//                docType,
-//                docTag,
-//                module
-//        );
-//
-//    }
-
     public ResponseEntity<List<Document>> searchDocuments(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String docType,

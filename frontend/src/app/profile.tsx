@@ -33,11 +33,8 @@ export default function Profile() {
     useEffect(() => {
         const getMultiple = async () => {
             try {
-                // 1. Use multiGet with an array of keys
                 const keyValuePairs = await AsyncStorage.multiGet(["userName", "userEmail"]);
                 const data = Object.fromEntries(keyValuePairs);
-
-                console.log(data);
 
                 setDisplayName(data.userName ?? "Unknown User");
                 // ?? -> If username is missing, return back "Unknown User"

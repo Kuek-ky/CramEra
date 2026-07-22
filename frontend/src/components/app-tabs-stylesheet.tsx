@@ -15,7 +15,7 @@ export default StyleSheet.create({
         right: Spacing.lg,
         bottom: Spacing.lg,
 
-        height: 77,
+        height: 65,
 
         borderRadius: Radius.lg,
 
@@ -38,8 +38,8 @@ export default StyleSheet.create({
 
     floatingTabBtnContainer: {
 
-        width: 60,
-        height: 60,
+        width: 70,
+        height: 70,
 
         borderRadius: Radius.pill,
 
@@ -71,7 +71,7 @@ export default StyleSheet.create({
     tabText: {
 
         ...{
-            fontSize: 11,
+            fontSize: 10,
             fontWeight: "600",
         },
 

@@ -19,10 +19,9 @@ import {
     Radius,
     Typography,
 } from "@/theme/Index";
-import {storeUserData, userStorage} from "@/api/asyncStoreUser";
+import {storeUserData} from "@/services/asyncStoreUser";
 
 const API_BASE = process.env.EXPO_PUBLIC_API_URL;
-console.log(API_BASE)
 
 function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -52,7 +51,6 @@ export default function Login() {
         try {
             setStatus("loading");
             setMessage("");
-            console.log("Sending user to backend");
 
             const response = await fetch(`${API_BASE}/api/login`, {
                 method: "POST",

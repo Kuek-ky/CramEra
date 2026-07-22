@@ -4,16 +4,9 @@ import {FlatList, View} from "react-native";
 import Header from "@/components/common/Header";
 import SearchBar from "@/components/searchBar";
 import DocumentCard from "@/components/document/DocumentCard";
-import { getStoredUserId } from "@/api/asyncStoreUser";
+import { getStoredUserId } from "@/services/asyncStoreUser";
 import { useCallback } from "react";
 import { useFocusEffect } from "expo-router";
-
-// interface Document {
-//     id: number;
-//     title: string;
-//     module: string;
-//     author: string;
-// }
 
 interface SearchResult {
     id: number;
@@ -32,7 +25,7 @@ export default function SearchScreen() {
     const [numericUserId, setNumericUserId] =
         useState<number | null>(null);
 
-    const API = process.env.EXPO_PUBLIC_API_URL;
+    const API_BASE = process.env.EXPO_PUBLIC_API_URL;
 
     const [search, setSearch] = useState("");
 
@@ -51,7 +44,6 @@ export default function SearchScreen() {
                 }
 
                 setNumericUserId(Number(storedUserId));
-                console.log("Stored user ID:", storedUserId);
             } catch (error) {
                 console.error("Failed to get user ID:", error);
             }
@@ -66,7 +58,7 @@ export default function SearchScreen() {
                 return;
             }
 
-            fetch(`${API}/savedDoc/${numericUserId}`)
+            fetch(`${API_BASE}/savedDoc/${numericUserId}`)
                 .then((res) => {
                     if (!res.ok) {
                         throw new Error("Failed to load saved documents");
@@ -88,7 +80,7 @@ export default function SearchScreen() {
                 .catch((err) => {
                     console.error("Failed to load saved documents:", err);
                 });
-        }, [numericUserId, API])
+        }, [numericUserId, API_BASE])
     );
 
     async function toggleBookmark(document: Document) {
@@ -102,14 +94,14 @@ export default function SearchScreen() {
 
             if (document.saved) {
                 response = await fetch(
-                    `${API}/savedDoc?userId=${numericUserId}&documentId=${document.id}`,
+                    `${API_BASE}/savedDoc?userId=${numericUserId}&documentId=${document.id}`,
                     {
                         method: "DELETE",
                     }
                 );
             } else {
                 response = await fetch(
-                    `${API}/savedDoc/save`,
+                    `${API_BASE}/savedDoc/save`,
                     {
                         method: "POST",
                         headers: {
@@ -156,7 +148,7 @@ export default function SearchScreen() {
 
     useEffect(() => {
         fetch(
-            `${API}/document/search?name=${encodeURIComponent(search)}`
+            `${API_BASE}/document/search?name=${encodeURIComponent(search)}`
         )
             .then((res) => res.json())
             .then((data: SearchResult[]) => {
@@ -175,16 +167,10 @@ export default function SearchScreen() {
             })
             .catch((err) => console.error(err));
 
-    }, [search, savedDocumentIds, API]);
+    }, [search, savedDocumentIds, API_BASE]);
 
     return (
-        <View style={{ marginTop: 10 }}>
-
-            <Header
-                title="Search"
-                subtitle="Find study materials"
-            />
-
+        <View style={{ marginTop: 20 }}>
             <View style={{ marginTop: -30 }}>
                 <SearchBar
                     value={search}

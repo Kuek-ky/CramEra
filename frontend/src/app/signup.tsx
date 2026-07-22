@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, router } from "expo-router";
-import {storeUserData, userStorage} from "@/api/asyncStoreUser";
+import {storeUserData, userStorage} from "@/services/asyncStoreUser";
 
 import {
     ActivityIndicator,
@@ -56,7 +56,6 @@ export default function SignUp() {
         try {
             setStatus("loading");
             setMessage("");
-            console.log("Sending user to backend");
 
             const response = await fetch(`${API_BASE}/api/users`, {
                 method: "POST",
@@ -85,8 +84,6 @@ export default function SignUp() {
                 setStatus("error");
                 setMessage(result);
             }
-
-            console.log("Backend response:", result);
         } catch (error) {
             await sleep(1000);
             setStatus("error");

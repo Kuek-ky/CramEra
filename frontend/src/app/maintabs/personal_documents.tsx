@@ -13,7 +13,7 @@ import SearchBar from "@/components/searchBar";
 import Card from "@/components/common/Card";
 import DocumentCard from "@/components/document/DocumentCard";
 import {Document} from "@/types/document";
-import {getStoredUserId} from "@/api/asyncStoreUser";
+import {getStoredUserId} from "@/services/asyncStoreUser";
 
 export default function PersonalScreen() {
 
@@ -184,6 +184,20 @@ export default function PersonalScreen() {
             >
                 <Text style={styles.plus}>+</Text>
             </Pressable>
+
+            {/*<Pressable*/}
+            {/*    style={[styles.createButton, {bottom: 200}]}*/}
+            {/*    onPress={() => {*/}
+            {/*        router.push({*/}
+            {/*            pathname: "/editDocDetails",*/}
+            {/*            params: {*/}
+            {/*                fileId: 8*/}
+            {/*            }*/}
+            {/*        })*/}
+            {/*    }}*/}
+            {/*>*/}
+            {/*    <Text style={styles.plus}>A</Text>*/}
+            {/*</Pressable>*/}
 
         </Screen>
 
