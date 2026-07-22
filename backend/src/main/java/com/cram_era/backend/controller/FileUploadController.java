@@ -148,6 +148,7 @@ public class FileUploadController {
 		updatedDoc.setOriginalUploaderID(existingDoc.getOriginalUploaderID());
 
 		if (hasNewFile) {
+			System.out.println(file.getOriginalFilename());
 			newS3Key = updatedDoc.generateS3Key(ownerId, file);
 			updatedDoc.setFileURL(newS3Key);
 			updatedDoc.setFileType(file.getContentType());

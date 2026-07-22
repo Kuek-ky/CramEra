@@ -4,6 +4,8 @@ import { Dropdown } from 'react-native-element-dropdown';
 import {Colors, Radius, Spacing, Typography} from "@/theme/Index";
 
 const SearchModules = ({ initialId, initialCodeName, onSelectModule }) => {
+    const API_BASE = process.env.EXPO_PUBLIC_API_URL;
+
     const [modules, setModules] = useState([]);
     const [currentModID, setCurrentModID] = useState(initialId);
     const [currentModName, setCurrentModName] = useState(initialCodeName);
@@ -27,7 +29,7 @@ const SearchModules = ({ initialId, initialCodeName, onSelectModule }) => {
             return;
         }
 
-        fetch(`http://172.18.110.10:8080/api/search/module?name=${searchText}`)
+        fetch(`${API_BASE}/api/search/module?name=${searchText}`)
             .then(res => res.json())
             .then((mods) => {
                 setModules(mods.map((m) => {

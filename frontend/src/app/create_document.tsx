@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import SearchModules from '../components/modulesSearchBar';
-import {getStoredUserId} from "@/api/asyncStoreUser";
+import {getStoredUserId} from "@/services/asyncStoreUser";
 
 import Screen from "@/components/common/Screen";
 import Header from "@/components/common/Header";
@@ -44,12 +44,8 @@ export default function CreateDocument() {
             copyToCacheDirectory: true,
         });
 
-        console.log(result);
-
         if (!result.canceled) {
-            console.log(result.assets[0]);
             setSelectedFile(result.assets[0]);
-
         }
 
     };
@@ -104,7 +100,6 @@ export default function CreateDocument() {
         xhr.onload = () => {
             setLoading(false);
             if (xhr.status >= 200 && xhr.status < 300) {
-                console.log("Upload success:", xhr.responseText);
                 Alert.alert("Success", "Document uploaded successfully!");
                 router.replace({
                     pathname: "/maintabs/home"
@@ -179,10 +174,7 @@ export default function CreateDocument() {
 
             {/* Description */}
 
-            <Text style={styles.label}>
-                Description
-            </Text>
-
+            <Text style={styles.label}>Description</Text>
             <TextInput
                 style={[styles.input, styles.description]}
                 placeholder="Enter description..."
@@ -288,7 +280,6 @@ const styles = StyleSheet.create({
         paddingVertical: Spacing.md,
         borderRadius: Radius.md,
         alignItems: "center",
-        marginTop: Spacing.md,
     },
 
     uploadButton: {
