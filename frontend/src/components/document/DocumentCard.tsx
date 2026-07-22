@@ -1,4 +1,4 @@
-import { Text, StyleSheet, Pressable } from "react-native";
+import { Text, StyleSheet, Pressable, Image, View } from "react-native";
 import { Document } from "@/types/document";
 
 import Card from "@/components/common/Card";
@@ -9,19 +9,40 @@ import {
     Typography
 } from "@/theme/Index";
 
+const bookmarkOutline = require("../../../assets/images/bookmark-outline.png")
+const bookmarkFilled = require("../../../assets/images/bookmark-filled.png")
+
 interface Props {
-
     document: Document;
-
+    onBookmarkPress?: () => void;
 }
 
-export default function DocumentCard({ document }: Props) {
+export default function DocumentCard({
+    document,
+    onBookmarkPress,
+ }: Props) {
     return (
         <Pressable>
             <Card style={styles.card}>
-                <Text style={Typography.caption}>
-                    {document.module}
-                </Text>
+                <View style={styles.topRow}>
+                    <Text style={Typography.caption}>
+                        {document.module}
+                    </Text>
+
+                    <Pressable
+                        onPress={onBookmarkPress}
+                        hitSlop={10}
+                    >
+                        <Image
+                            source={
+                                document.saved
+                                    ? bookmarkFilled
+                                    : bookmarkOutline
+                            }
+                            style={styles.bookmark}
+                        />
+                    </Pressable>
+                </View>
 
                 <Text
                     style={[
@@ -64,4 +85,15 @@ const styles = StyleSheet.create({
         color: Colors.textSecondary,
     },
 
+    topRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+
+    bookmark: {
+        width: 24,
+        height: 24,
+        resizeMode: "contain",
+    },
 });

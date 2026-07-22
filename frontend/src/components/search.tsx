@@ -1,35 +1,181 @@
+import {Document} from "@/types/document"
 import {useEffect, useState} from "react";
 import {FlatList, View} from "react-native";
 import Header from "@/components/common/Header";
 import SearchBar from "@/components/searchBar";
 import DocumentCard from "@/components/document/DocumentCard";
+import { getStoredUserId } from "@/api/asyncStoreUser";
+import { useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 
-interface Document {
+// interface Document {
+//     id: number;
+//     title: string;
+//     module: string;
+//     author: string;
+// }
+
+interface SearchResult {
     id: number;
     title: string;
-    module: string;
+    description: string;
+    module: {
+        moduleCode: string;
+    } | null;
     author: string;
+    rating?: number;
+    fileUrl?: string;
+    documentType?: string;
 }
 
 export default function SearchScreen() {
+    const [numericUserId, setNumericUserId] =
+        useState<number | null>(null);
 
-    const API = "http://172.18.110.10:8080";
+    const API = process.env.EXPO_PUBLIC_API_URL;
 
     const [search, setSearch] = useState("");
 
-
     const [documents, setDocuments] = useState<Document[]>([]);
 
-    useEffect(() => {
+    const [savedDocumentIds, setSavedDocumentIds] = useState<number[]>([]);
 
+    useEffect(() => {
+        async function loadUserId() {
+            try {
+                const storedUserId = await getStoredUserId();
+
+                if (storedUserId === null) {
+                    console.error("No stored user ID");
+                    return;
+                }
+
+                setNumericUserId(Number(storedUserId));
+                console.log("Stored user ID:", storedUserId);
+            } catch (error) {
+                console.error("Failed to get user ID:", error);
+            }
+        }
+
+        loadUserId();
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            if (numericUserId === null) {
+                return;
+            }
+
+            fetch(`${API}/savedDoc/${numericUserId}`)
+                .then((res) => {
+                    if (!res.ok) {
+                        throw new Error("Failed to load saved documents");
+                    }
+
+                    return res.json();
+                })
+                .then((savedDocs) => {
+                    const ids = savedDocs.map(
+                        (savedDoc: {
+                            id: {
+                                documentId: number;
+                            };
+                        }) => savedDoc.id.documentId
+                    );
+
+                    setSavedDocumentIds(ids);
+                })
+                .catch((err) => {
+                    console.error("Failed to load saved documents:", err);
+                });
+        }, [numericUserId, API])
+    );
+
+    async function toggleBookmark(document: Document) {
+        if (numericUserId === null) {
+            console.error("User ID has not loaded yet");
+            return;
+        }
+
+        try {
+            let response: Response;
+
+            if (document.saved) {
+                response = await fetch(
+                    `${API}/savedDoc?userId=${numericUserId}&documentId=${document.id}`,
+                    {
+                        method: "DELETE",
+                    }
+                );
+            } else {
+                response = await fetch(
+                    `${API}/savedDoc/save`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            id: {
+                                documentId: document.id,
+                                userId: numericUserId,
+                            },
+                            folderId: null,
+                        }),
+                    }
+                );
+            }
+
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                throw new Error(errorMessage);
+            }
+
+            setSavedDocumentIds((currentIds) =>
+                document.saved
+                    ? currentIds.filter((id) => id !== document.id)
+                    : [...currentIds, document.id]
+            );
+
+            setDocuments((currentDocuments) =>
+                currentDocuments.map((currentDocument) => {
+                    if (currentDocument.id === document.id) {
+                        return {
+                            ...currentDocument,
+                            saved: !currentDocument.saved,
+                        };
+                    }
+
+                    return currentDocument;
+                })
+            );
+        } catch (error) {
+            console.error("Bookmark failed:", error);
+        }
+    }
+
+    useEffect(() => {
         fetch(
-            `${API}/document/search?name=${search}`
+            `${API}/document/search?name=${encodeURIComponent(search)}`
         )
             .then((res) => res.json())
-            .then((data) => setDocuments(data))
+            .then((data: SearchResult[]) => {
+                const formattedDocuments: Document[] = data.map((item) => ({
+                    id: item.id,
+                    title: item.title,
+                    description: item.description,
+                    module: item.module?.moduleCode ?? "",
+                    author: item.author ?? "",
+                    rating: item.rating ?? 0,
+                    fileUrl: item.fileUrl ?? "",
+                    documentType: item.documentType ?? "",
+                    saved: savedDocumentIds.includes(item.id),
+                }));
+                setDocuments(formattedDocuments);
+            })
             .catch((err) => console.error(err));
 
-    }, [search]);
+    }, [search, savedDocumentIds, API]);
 
     return (
         <View style={{ marginTop: 10 }}>
@@ -53,22 +199,12 @@ export default function SearchScreen() {
                     paddingTop: 16,
                     paddingBottom: 120,
                 }}
-                renderItem={({ item }) => {
-                    let moduleCode = "";
-                    if (item.module != null){
-                        moduleCode = item.module.moduleCode
-                    }
-                    return (
-                        <DocumentCard
-                            document={{
-                                module: moduleCode || "",
-                                title: item.title,
-                                description: item.description,
-                                author: item.author,
-                            }}
-                        />
-                    )
-                }}
+                renderItem={({ item }) => (
+                    <DocumentCard
+                        document={item}
+                        onBookmarkPress={() => toggleBookmark(item)}
+                    />
+                )}
             />
 
         </View>

@@ -3,6 +3,7 @@ import {Text, View} from "react-native";
 import SearchScreen from "@/components/search"
 import Screen from "@/components/common/Screen";
 import Header from "@/components/common/Header";
+import { useLocalSearchParams } from "expo-router";
 
 import {
     Colors,
@@ -18,6 +19,10 @@ const API_BASE = process.env.EXPO_PUBLIC_API_URL;
 export default function Landing() {
     const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
     const [message, setMessage] = useState("");
+    const { userId } = useLocalSearchParams<{
+        userId?: string;
+    }>();
+
     return (
         <Screen>
             {/* Header */}
@@ -107,7 +112,7 @@ export default function Landing() {
             {/*    </Text>*/}
             {/*</View>*/}
 
-            <SearchScreen />
+            <SearchScreen userId={userId} />
 
         </Screen>
     );

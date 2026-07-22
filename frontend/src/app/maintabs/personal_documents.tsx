@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import {
     StyleSheet,
     Text,
@@ -6,56 +6,22 @@ import {
     Pressable,
 } from "react-native";
 import Screen from "@/components/common/Screen";
-import {router, useLocalSearchParams} from "expo-router";
-import { Colors } from "@/theme/Index";
+import {router, useFocusEffect} from "expo-router";
+import {Colors} from "@/theme/Index";
 import Header from "@/components/common/Header";
 import SearchBar from "@/components/searchBar";
 import Card from "@/components/common/Card";
 import DocumentCard from "@/components/document/DocumentCard";
+import {Document} from "@/types/document";
 import {getStoredUserId} from "@/api/asyncStoreUser";
-
-interface Document {
-    id: number;
-    title: string;
-    module: string;
-    type: string;
-}
 
 export default function PersonalScreen() {
 
     const [search, setSearch] = useState("");
 
-    const documents: Document[] = [
-
-        {
-            id: 1,
-            title: "Week 5 Java Notes",
-            module: "CS101",
-            type: "Created"
-        },
-
-        {
-            id: 2,
-            title: "Database Cheatsheet",
-            module: "IS216",
-            type: "Created"
-        },
-
-        {
-            id: 3,
-            title: "React Native Guide",
-            module: "CS303",
-            type: "Saved"
-        },
-
-        {
-            id: 4,
-            title: "Operating Systems",
-            module: "CS204",
-            type: "Saved"
-        }
-
-    ];
+    const [documents, setDocuments] = useState<Document[]>([]);
+    const [numericUserId, setNumericUserId] =
+        useState<number | null>(null);
 
     const filtered = useMemo(() => {
 
@@ -65,7 +31,105 @@ export default function PersonalScreen() {
 
         );
 
-    }, [search]);
+    }, [documents, search]);
+
+    const API = process.env.EXPO_PUBLIC_API_URL;
+
+    useEffect(() => {
+        async function loadUserId() {
+            try {
+                const storedUserId = await getStoredUserId();
+
+                if (storedUserId === null) {
+                    console.error("No stored user ID");
+                    return;
+                }
+
+                setNumericUserId(Number(storedUserId));
+            } catch (error) {
+                console.error("Failed to load user ID:", error);
+            }
+        }
+
+        loadUserId();
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            if (numericUserId === null) {
+                return;
+            }
+
+            fetch(`${API}/savedDoc/${numericUserId}`)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Failed to load saved documents");
+                    }
+
+                    return response.json();
+                })
+                .then(async (savedDocs) => {
+                    const documentRequests = savedDocs.map(
+                        (savedDoc: {
+                            id: {
+                                documentId: number;
+                            };
+                        }) =>
+                            fetch(
+                                `${API}/document/getMetaData/${savedDoc.id.documentId}`
+                            ).then((response) => response.json())
+                    );
+
+                    const documentResults =
+                        await Promise.all(documentRequests);
+
+                    const formattedDocuments: Document[] =
+                        documentResults.map((item) => ({
+                            id: item.id,
+                            title: item.title,
+                            description: item.description ?? "",
+                            module: item.module?.moduleCode ?? "",
+                            author: item.author ?? "",
+                            rating: item.rating ?? 0,
+                            fileUrl: item.fileURL ?? "",
+                            documentType: item.documentType ?? "",
+                            saved: true,
+                        }));
+
+                    setDocuments(formattedDocuments);
+                })
+                .catch((error) => {
+                    console.error(
+                        "Failed to load saved documents:",
+                        error
+                    );
+                });
+        }, [numericUserId, API])
+    );
+
+    async function removeBookmark(documentId: number) {
+        if (numericUserId === null) {
+            return;
+        }
+
+        const response = await fetch(
+            `${API}/savedDoc?userId=${numericUserId}&documentId=${documentId}`,
+            {
+                method: "DELETE",
+            }
+        );
+
+        if (!response.ok) {
+            console.error("Failed to remove bookmark");
+            return;
+        }
+
+        setDocuments((currentDocuments) =>
+            currentDocuments.filter(
+                (document) => document.id !== documentId
+            )
+        );
+    }
 
     return (
 
@@ -104,12 +168,8 @@ export default function PersonalScreen() {
                 renderItem={({ item }) => (
 
                     <DocumentCard
-                        document={{
-                            module: item.module,
-                            title: item.title,
-                            description: item.type,
-                            author: "",
-                        }}
+                        document={item}
+                        onBookmarkPress={() => removeBookmark(item.id)}
                     />
 
                 )}

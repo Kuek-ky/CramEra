@@ -1,6 +1,6 @@
 import { Document } from "../types/document";
 
-const API = "http://172.18.110.10:8080";
+const API = "http://172.18.77.219:8080";
 
 export async function getPublicDocuments() {
 

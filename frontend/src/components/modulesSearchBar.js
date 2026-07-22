@@ -27,7 +27,7 @@ const SearchModules = ({ initialId, initialCodeName, onSelectModule }) => {
             return;
         }
 
-        fetch(`http://172.18.110.10:8080/api/search/module?name=${searchText}`)
+        fetch(`http://172.18.77.219:8080/api/search/module?name=${searchText}`)
             .then(res => res.json())
             .then((mods) => {
                 setModules(mods.map((m) => {

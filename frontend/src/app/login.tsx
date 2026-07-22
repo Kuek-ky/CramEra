@@ -71,8 +71,13 @@ export default function Login() {
                 await storeUserData(user.userId, user.userName, user.userEmail);
 
                 router.replace({
-                    pathname: "/maintabs/home"
-                })
+                    pathname: "/maintabs/home",
+                    params: {
+                        userName: user.userName,
+                        userEmail: user.userEmail,
+                        userId: user.userId.toString()
+                    },
+                });
             } else {
                 const result = await response.text();
 
