@@ -4,6 +4,7 @@ import {
     Text,
     FlatList,
     Pressable,
+    View
 } from "react-native";
 import Screen from "@/components/common/Screen";
 import {router, useFocusEffect} from "expo-router";
@@ -158,23 +159,42 @@ export default function PersonalScreen() {
                 </Text>
 
             </Card>
+            <View style={{ flex: 1 }}>
+                <FlatList
+                    style={{ flex: 1 }}
 
-            <FlatList
+                    data={filtered}
 
-                data={filtered}
+                    keyExtractor={(item) => item.id.toString()}
 
-                keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => (
 
-                renderItem={({ item }) => (
+                        <DocumentCard
+                            document={item}
+                            onBookmarkPress={() => removeBookmark(item.id)}
+                            viewDocPage={() => {
+                                router.push({
+                                    pathname: "/view_doc",
+                                    params: {
+                                        fileId: item.id,
+                                    },
+                                })
+                            }}
+                            onUpdatePress={() => {
+                                router.push({
+                                    pathname: "/editDocDetails",
+                                    params: {
+                                        fileId: item.id,
+                                    },
+                                })
+                            }}
+                            userId={numericUserId}
+                        />
 
-                    <DocumentCard
-                        document={item}
-                        onBookmarkPress={() => removeBookmark(item.id)}
-                    />
+                    )}
 
-                )}
-
-            />
+                />
+            </View>
 
             <Pressable
                 style={styles.createButton}
@@ -184,21 +204,6 @@ export default function PersonalScreen() {
             >
                 <Text style={styles.plus}>+</Text>
             </Pressable>
-
-            {/*<Pressable*/}
-            {/*    style={[styles.createButton, {bottom: 200}]}*/}
-            {/*    onPress={() => {*/}
-            {/*        router.push({*/}
-            {/*            pathname: "/editDocDetails",*/}
-            {/*            params: {*/}
-            {/*                fileId: 8*/}
-            {/*            }*/}
-            {/*        })*/}
-            {/*    }}*/}
-            {/*>*/}
-            {/*    <Text style={styles.plus}>A</Text>*/}
-            {/*</Pressable>*/}
-
         </Screen>
 
     );

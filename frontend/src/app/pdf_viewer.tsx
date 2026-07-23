@@ -34,16 +34,10 @@ import { WebView, WebViewMessageEvent } from 'react-native-webview';
 // Config — adjust to your backend
 // ---------------------------------------------------------------------------
 
-const API_BASE = 'https://api.yourapp.com';
+const API_BASE = process.env.EXPO_PUBLIC_API_URL;
 const PRESIGN_TIMEOUT_MS = 10_000;
 const DOWNLOAD_TIMEOUT_MS = 30_000;
 const MAX_FILE_BYTES = 15 * 1024 * 1024; // 15 MB cap for base64-in-memory
-
-/** Replace with your real token source (expo-secure-store, auth context…) */
-async function getAuthToken(): Promise<string | null> {
-  // e.g. return SecureStore.getItemAsync('accessToken');
-  return null;
-}
 
 // ---------------------------------------------------------------------------
 // Types
@@ -108,20 +102,12 @@ async function fetchPresignedUrl(
   fileId: string,
   signal: AbortSignal,
 ): Promise<string> {
-  const token = await getAuthToken();
-  if (!token) {
-    throw new ViewerException({
-      kind: 'auth',
-      message: 'You need to sign in to view this document.',
-      retryable: false,
-    });
-  }
 
   let res: Response;
   try {
     res = await fetchWithTimeout(
-      `${API_BASE}/files/${encodeURIComponent(fileId)}/presigned-url`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      `${API_BASE}/document/view/${fileId}`,
+        {},
       PRESIGN_TIMEOUT_MS,
       signal,
     );
@@ -157,7 +143,7 @@ async function fetchPresignedUrl(
 
   let url: string | undefined;
   try {
-    url = ((await res.json()) as { url?: string })?.url;
+    url = await res.text();
   } catch {
     /* fall through to validation below */
   }

@@ -150,12 +150,6 @@ INSERT INTO folders (folders_ID, user_ID, folder_name) VALUES
 (2, 2, 'Business Notes'),
 (3, 3, 'Math Reviews');
 
--- 6. Insert Tags
-INSERT INTO tags (tags_ID, tag_name) VALUES
-(1, 'Exam Prep'),
-(2, 'Cheatsheet'),
-(3, 'Lecture Notes');
-
 -- 7. Insert Course Modules (Requires valid module_ID and course_ID)
 INSERT INTO course_modules (course_modules_ID, module_ID, course_ID) VALUES
 (1, 1, 1),
@@ -167,7 +161,5 @@ INSERT INTO saved_documents (document_ID, user_ID,folder_ID) VALUES
 (1, 1, 1),
 (2, 1, 1); 
 
-
-SELECT USER();
 
 

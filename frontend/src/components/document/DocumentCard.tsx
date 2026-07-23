@@ -8,40 +8,66 @@ import {
     Spacing,
     Typography
 } from "@/theme/Index";
+import {getStoredUserId} from "@/services/asyncStoreUser";
 
 const bookmarkOutline = require("../../../assets/images/bookmark-outline.png")
 const bookmarkFilled = require("../../../assets/images/bookmark-filled.png")
+const editIcon = require("../../../assets/images/editIcon.png")
 
 interface Props {
     document: Document;
     onBookmarkPress?: () => void;
+    viewDocPage?: () => void;
+    onUpdatePress?: () => void;
+    userId: number;
 }
 
 export default function DocumentCard({
     document,
     onBookmarkPress,
+    viewDocPage,
+    onUpdatePress,
+    userId
  }: Props) {
     return (
-        <Pressable>
+        <Pressable
+            onPress={viewDocPage}
+        >
             <Card style={styles.card}>
                 <View style={styles.topRow}>
                     <Text style={Typography.caption}>
                         {document.module}
                     </Text>
 
-                    <Pressable
-                        onPress={onBookmarkPress}
-                        hitSlop={10}
-                    >
-                        <Image
-                            source={
-                                document.saved
-                                    ? bookmarkFilled
-                                    : bookmarkOutline
-                            }
-                            style={styles.bookmark}
-                        />
-                    </Pressable>
+                    <View style={styles.topRow}>
+                        <Pressable
+                            onPress={onBookmarkPress}
+                            hitSlop={10}
+                        >
+                            <Image
+                                source={
+                                    document.saved
+                                        ? bookmarkFilled
+                                        : bookmarkOutline
+                                }
+                                style={styles.bookmark}
+                            />
+                        </Pressable>
+                        {
+                            document.ownerUserID == userId
+                            ?
+                                <Pressable
+                                onPress={onUpdatePress}
+                                hitSlop={10}
+                            >
+                                <Image
+                                    source={editIcon}
+                                    style={styles.bookmark}
+                                />
+                                </Pressable>
+                            : null
+                        }
+                    </View>
                 </View>
 
                 <Text

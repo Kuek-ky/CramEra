@@ -10,6 +10,8 @@ export interface Document {
 
     author: string;
 
+    ownerUserID: number;
+
     rating: number;
 
     fileUrl: string;

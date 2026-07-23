@@ -6,7 +6,7 @@ import SearchBar from "@/components/searchBar";
 import DocumentCard from "@/components/document/DocumentCard";
 import { getStoredUserId } from "@/services/asyncStoreUser";
 import { useCallback } from "react";
-import { useFocusEffect } from "expo-router";
+import {router, useFocusEffect} from "expo-router";
 
 interface SearchResult {
     id: number;
@@ -19,6 +19,7 @@ interface SearchResult {
     rating?: number;
     fileUrl?: string;
     documentType?: string;
+    ownerUserID: number;
 }
 
 export default function SearchScreen() {
@@ -154,6 +155,7 @@ export default function SearchScreen() {
             .then((data: SearchResult[]) => {
                 const formattedDocuments: Document[] = data.map((item) => ({
                     id: item.id,
+                    ownerUserID: item.ownerUserID,
                     title: item.title,
                     description: item.description,
                     module: item.module?.moduleCode ?? "",
@@ -170,7 +172,7 @@ export default function SearchScreen() {
     }, [search, savedDocumentIds, API_BASE]);
 
     return (
-        <View style={{ marginTop: 20 }}>
+        <View style={{ marginTop: 20, flex: 1 }}>
             <View style={{ marginTop: -30 }}>
                 <SearchBar
                     value={search}
@@ -179,6 +181,7 @@ export default function SearchScreen() {
             </View>
 
             <FlatList
+                style={{ flex: 1 }}
                 data={documents}
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={{
@@ -189,6 +192,24 @@ export default function SearchScreen() {
                     <DocumentCard
                         document={item}
                         onBookmarkPress={() => toggleBookmark(item)}
+                        viewDocPage={() => {
+                            router.push({
+                                pathname: "/view_doc",
+                                params: {
+                                    fileId: item.id,
+                                },
+                            })
+                        }}
+                        onUpdatePress={() => {
+                            router.push({
+                                pathname: "/editDocDetails",
+                                params: {
+                                    fileId: item.id,
+                                },
+                            })
+                        }}
+                        userId={numericUserId}
+
                     />
                 )}
             />
