@@ -3,12 +3,12 @@
 ## Running the Code Locally
 
 ### 1. Database Setup
-Run the `cramera.sql` script in your MySQL Workbench to create a new schema.
+Run the `cramera.sql` script from the `submission` folder in your MySQL Workbench to create a new schema.
 
 ### 2. Environment Variables Setup (`.env`)
 
 #### Backend
-Place the `.env` file from the `env_backend` folder into the `backend` folder (at the same level as the `pom.xml` file).
+Place the `.env` file from the `submission\env_backend` folder into the `backend` folder (at the same level as the `pom.xml` file).
 
 **Note:**
 - `SQL_CONNECTION_URL`: Replace the IP address with your IP address, and the `SQLPORT` with the port your SQL connection is currently using.
@@ -20,7 +20,7 @@ Place the `.env` file from the `env_backend` folder into the `backend` folder (a
   ```
 
 #### Frontend
-Place the `.env` file from the `env_frontend` folder into the `frontend` folder (at the same level as the `tsconfig.json` file).
+Place the `.env` file from the `submission\env_frontend` folder into the `frontend` folder (at the same level as the `tsconfig.json` file).
 
 **Note:**
 - `EXPO_PUBLIC_API_URL`: Replace the IP address with your IP address.
