@@ -45,4 +45,4 @@ npm start
 ---
 
 ## Running the Code on Cloud
-Download the `.apk` file in the submission folder and run it on an Android device.
+Unzip and download the `.apk` file from cramEraAPK.zip and run it on an Android device.
